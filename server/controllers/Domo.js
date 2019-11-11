@@ -11,25 +11,30 @@ const makerPage = (req, res) => {
 };
 
 const makeDomo = (req, res) => {
-  if (!req.body.name || !req.body.age || !req.body.thickness) {
-    return res.status(400).json({ error: 'RAWR! Name age, and thickness are required' });
+  // missing neccessary parameters
+  console.log(req.body);
+  if (!req.body.name || !req.body.type || !req.body.status) {
+    return res.status(400).json({ error: 'RAWR! Name, Type, and Status are required' });
   }
 
   const domoData = {
     name: req.body.name,
-    age: req.body.age,
+    type: req.body.type,
+    status: req.body.status,
+    year: req.body.year,
+    image: req.body.image,
     owner: req.session.account._id,
-    thickness: req.body.thickness,
   };
 
   const newDomo = new Domo.DomoModel(domoData);
+  console.log("newDomo:" + newDomo);
 
   const domoPromise = newDomo.save();
   domoPromise.then(() => res.json({ redirect: '/maker' }));
   domoPromise.catch((err) => {
     console.log(err);
     if (err.code === 11000) {
-      return res.status(400).json({ error: 'Domo already exists.' });
+      return res.status(400).json({ error: 'Content already exists.' });
     }
 
     return res.status(400).json({ error: 'An error occurred' });
@@ -46,6 +51,7 @@ const getDomos = (req, res) => {
       console.log(err);
       return rs.status(400).json({ error: 'An error occurred' });
     }
+    console.log("Docs: " + docs);
 
     return rs.json({ domos: docs });
   });

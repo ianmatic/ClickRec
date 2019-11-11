@@ -15,22 +15,34 @@ const DomoSchema = new mongoose.Schema({
     set: setName,
   },
 
-  age: {
+  type: {
+    type: String,
+    trim: true,
+    required: true,
+  },
+
+  status: {
+    type: String,
+    trim: true,
+    required: true
+  },
+
+  year: {
     type: Number,
     min: 0,
-    required: true,
+    required: false
+  },
+
+  image: {
+    type: String,
+    trim: true,
+    required: false,
   },
 
   owner: {
     type: mongoose.Schema.ObjectId,
     required: true,
     ref: 'Account',
-  },
-
-  thickness: {
-    type: Number,
-    min: 0,
-    required: true,
   },
 
   createdData: {
@@ -41,8 +53,10 @@ const DomoSchema = new mongoose.Schema({
 
 DomoSchema.statics.toAPI = (doc) => ({
   name: doc.name,
-  age: doc.age,
-  thickness: doc.thickness,
+  type: doc.type,
+  status: doc.status,
+  year: doc.year,
+  image: doc.image,
 });
 
 DomoSchema.statics.findByOwner = (ownerId, callback) => {
@@ -50,7 +64,7 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
     owner: convertId(ownerId),
   };
 
-  return DomoModel.find(search).select('name age thickness').exec(callback);
+  return DomoModel.find(search).select('name type status year image').exec(callback);
 };
 
 DomoSchema.statics.delete = (id, callback) => DomoModel.findByIdAndRemove(id).exec(callback);

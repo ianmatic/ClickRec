@@ -2,98 +2,123 @@ const handleDomo = (e) => {
     e.preventDefault();
 
     $("#domoMessage").animate({ width: 'hide' }, 350);
-    if ($("#domoname").val() == '' || $("#domoAge").val() == '' || $("#domoThickness").val() == '') {
+    if ($("#contentName").val() == '' || $("#contentType").val() == '' || $("#contentStatus").val() == '') {
         handleError("RAWR! All fields are required");
         return false;
     }
 
-    sendAjax('POST', $("#domoForm").attr("action"), $("#domoForm").serialize(), function () {
-        loadDomosFromServer();
+    sendAjax('POST', $("#contentForm").attr("action"), $("#contentForm").serialize(), function () {
+        loadContentFromServer();
     });
 
     return false;
 };
 
 let csrfToken;
-let domoToDelete;
+let contentToDelete;
 
-const deleteDomo = (e) => {
+const deleteContent = (e) => {
     e.preventDefault();
 
-    // get the id of the domo to be deleted
-    var selectedDomo = `uniqueid=${e.target.parentElement.getAttribute("data-id")}&_csrf=${csrfToken}`;
-    domoToDelete = e.target.parentElement;
-    sendAjax('DELETE', "/maker", selectedDomo, () => {
-        domoToDelete.remove();
-        domoToDelete = "";
+    // get the id of the content to be deleted
+    var selectedContent = `uniqueid=${e.target.parentElement.getAttribute("data-id")}&_csrf=${csrfToken}`;
+    contentToDelete = e.target.parentElement;
+    sendAjax('DELETE', "/maker", selectedContent, () => {
+        contentToDelete.remove();
+        contentToDelete = "";
     });
 }
 
-const DomoForm = (props) => {
+// The form for adding new content
+const ContentForm = (props) => {
     return (
-        <form id="domoForm"
+        <form id="contentForm"
             onSubmit={handleDomo}
-            name="domoForm"
+            name="contentForm"
             action="/maker"
             method="POST"
-            className="domoForm"
-        >
-            <label htmlFor="name">Name: </label>
-            <input id="domoName" type="text" name="name" placeholder="Domo Name" />
-            <label htmlFor="age">Age: </label>
-            <input id="domoAge" type="text" name="age" placeholder="Domo Age" />
-            <label htmlFor="thickness">Thickness: </label>
-            <input id="domoThickness" type="text" name="thickness" placeholder="Domo Thickness" />
+            className="contentForm"
+        >   {/*Name*/}
+            <label htmlFor="name">Name*: </label>
+            <input id="contentName" type="text" name="name" placeholder="Name" required />
+            {/*Type*/}
+            <label htmlFor="type">Type*: </label>
+            <select id="contentType" name="type" required>
+                <option value="film">Film</option>
+                <option value="tv">TV</option>
+                <option value="game">Game</option>
+                <option value="literature">Literature</option>
+                <option value="music">Music</option>
+                <option value="other">Other</option>
+            </select>
+            <input id="otherField" type="text" name="other" placeholder="Other" disabled />
+            {/*Status*/}
+            <label htmlFor="status">Status*: </label>
+            <select id="contentStatus" name="status" required>
+                <option value="wishlist">Wishlist</option>
+                <option value="inProgress">In Progress</option>
+                <option value="Complete">Complete</option>
+            </select>
+            <br />
+            {/*Year*/}
+            <label htmlFor="year">Year: </label>
+            <input id="contentYear" type="text" name="year" placeholder="Number" />
+            {/*Image*/}
+            <label htmlFor="image">Image: </label>
+            <input id="contentImage" type="text" name="image" placeholder="URL" />
+            {/*CSRF*/}
             <input type="hidden" name="_csrf" value={props.csrf} />
-            <input className="makeDomoSubmit" type="submit" value="Make Domo" />
+            {/*Submit*/}
+            <input className="addContentSubmit" type="submit" value="Add Content" />
         </form>
     );
 };
 
-const DomoList = function (props) {
-    if (props.domos.length === 0) {
+const ContentTable = function (props) {
+    if (props.contentTable.length === 0) {
         return (
-            <div className="domoList">
-                <h3 className="emptyDomo">No Domos yet</h3>
+            <div className="contentList">
+                <h3 className="emptyContent">No Content yet</h3>
             </div>
         );
     }
 
-    const domoNodes = props.domos.map(function (domo) {
+    const contentNodes = props.contentTable.map(function (content) {
         return (
-            <div key={domo._id} data-id={domo._id} className="domo">
-                <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
-                <h3 className="domoName"> Name: {domo.name} </h3>
-                <h3 className="domoAge"> Age: {domo.age} </h3>
-                <h3 className="domoThickness">Thickness: {domo.thickness}</h3>
-                <button className="deleteButton" onClick={deleteDomo}>Delete</button>
+            <div key={content._id} data-id={content._id} className="content">
+                <img src={content.image} alt={content.name} className="contentImg" />
+                <h3 className="contentName"> Name: {content.name} </h3>
+                <h3 className="contentType"> Type: {content.type} </h3>
+                <h3 className="contentStatus">Status: {content.status}</h3>
+                <h3 className="contentYear"> Year: {content.year} </h3>
+                <button className="deleteButton" onClick={deleteContent}>Delete</button>
             </div>
         );
     });
 
     return (
-        <div className="domoList">
-            {domoNodes}
+        <div className="contentTable">
+            {contentNodes}
         </div>
     );
 };
 
-const loadDomosFromServer = () => {
+const loadContentFromServer = () => {
     sendAjax('GET', '/getDomos', null, (data) => {
         ReactDOM.render(
-            <DomoList domos={data.domos} />, document.querySelector("#domos")
+            <ContentTable contentTable={data.domos} />, document.querySelector("#contentTable")
         );
     });
 };
 
 const setup = function (csrf) {
     ReactDOM.render(
-        <DomoForm csrf={csrf} />, document.querySelector("#makeDomo")
+        <ContentForm csrf={csrf} />, document.querySelector("#addContent")
     );
     ReactDOM.render(
-        <DomoList domos={[]} />, document.querySelector("#domos")
+        <ContentForm contentTable={[]} />, document.querySelector("#contentTable")
     );
-    loadDomosFromServer();
+    loadContentFromServer();
 };
 
 const getToken = () => {

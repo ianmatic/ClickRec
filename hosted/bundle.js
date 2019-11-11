@@ -4,107 +4,181 @@ var handleDomo = function handleDomo(e) {
     e.preventDefault();
 
     $("#domoMessage").animate({ width: 'hide' }, 350);
-    if ($("#domoname").val() == '' || $("#domoAge").val() == '' || $("#domoThickness").val() == '') {
+    if ($("#contentName").val() == '' || $("#contentType").val() == '' || $("#contentStatus").val() == '') {
         handleError("RAWR! All fields are required");
         return false;
     }
 
-    sendAjax('POST', $("#domoForm").attr("action"), $("#domoForm").serialize(), function () {
-        loadDomosFromServer();
+    sendAjax('POST', $("#contentForm").attr("action"), $("#contentForm").serialize(), function () {
+        loadContentFromServer();
     });
 
     return false;
 };
 
 var csrfToken = void 0;
-var domoToDelete = void 0;
+var contentToDelete = void 0;
 
-var deleteDomo = function deleteDomo(e) {
+var deleteContent = function deleteContent(e) {
     e.preventDefault();
 
-    // get the id of the domo to be deleted
-    var selectedDomo = "uniqueid=" + e.target.parentElement.getAttribute("data-id") + "&_csrf=" + csrfToken;
-    domoToDelete = e.target.parentElement;
-    sendAjax('DELETE', "/maker", selectedDomo, function () {
-        domoToDelete.remove();
-        domoToDelete = "";
+    // get the id of the content to be deleted
+    var selectedContent = "uniqueid=" + e.target.parentElement.getAttribute("data-id") + "&_csrf=" + csrfToken;
+    contentToDelete = e.target.parentElement;
+    sendAjax('DELETE', "/maker", selectedContent, function () {
+        contentToDelete.remove();
+        contentToDelete = "";
     });
 };
 
-var DomoForm = function DomoForm(props) {
+// The form for adding new content
+var ContentForm = function ContentForm(props) {
     return React.createElement(
         "form",
-        { id: "domoForm",
+        { id: "contentForm",
             onSubmit: handleDomo,
-            name: "domoForm",
+            name: "contentForm",
             action: "/maker",
             method: "POST",
-            className: "domoForm"
+            className: "contentForm"
         },
+        "   ",
         React.createElement(
             "label",
             { htmlFor: "name" },
-            "Name: "
+            "Name*: "
         ),
-        React.createElement("input", { id: "domoName", type: "text", name: "name", placeholder: "Domo Name" }),
+        React.createElement("input", { id: "contentName", type: "text", name: "name", placeholder: "Name", required: true }),
         React.createElement(
             "label",
-            { htmlFor: "age" },
-            "Age: "
+            { htmlFor: "type" },
+            "Type*: "
         ),
-        React.createElement("input", { id: "domoAge", type: "text", name: "age", placeholder: "Domo Age" }),
+        React.createElement(
+            "select",
+            { id: "contentType", name: "type", required: true },
+            React.createElement(
+                "option",
+                { value: "film" },
+                "Film"
+            ),
+            React.createElement(
+                "option",
+                { value: "tv" },
+                "TV"
+            ),
+            React.createElement(
+                "option",
+                { value: "game" },
+                "Game"
+            ),
+            React.createElement(
+                "option",
+                { value: "literature" },
+                "Literature"
+            ),
+            React.createElement(
+                "option",
+                { value: "music" },
+                "Music"
+            ),
+            React.createElement(
+                "option",
+                { value: "other" },
+                "Other"
+            )
+        ),
+        React.createElement("input", { id: "otherField", type: "text", name: "other", placeholder: "Other", disabled: true }),
         React.createElement(
             "label",
-            { htmlFor: "thickness" },
-            "Thickness: "
+            { htmlFor: "status" },
+            "Status*: "
         ),
-        React.createElement("input", { id: "domoThickness", type: "text", name: "thickness", placeholder: "Domo Thickness" }),
+        React.createElement(
+            "select",
+            { id: "contentStatus", name: "status", required: true },
+            React.createElement(
+                "option",
+                { value: "wishlist" },
+                "Wishlist"
+            ),
+            React.createElement(
+                "option",
+                { value: "inProgress" },
+                "In Progress"
+            ),
+            React.createElement(
+                "option",
+                { value: "Complete" },
+                "Complete"
+            )
+        ),
+        React.createElement("br", null),
+        React.createElement(
+            "label",
+            { htmlFor: "year" },
+            "Year: "
+        ),
+        React.createElement("input", { id: "contentYear", type: "text", name: "year", placeholder: "Number" }),
+        React.createElement(
+            "label",
+            { htmlFor: "image" },
+            "Image: "
+        ),
+        React.createElement("input", { id: "contentImage", type: "text", name: "image", placeholder: "URL" }),
         React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-        React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
+        React.createElement("input", { className: "addContentSubmit", type: "submit", value: "Add Content" })
     );
 };
 
-var DomoList = function DomoList(props) {
-    if (props.domos.length === 0) {
+var ContentTable = function ContentTable(props) {
+    if (props.contentTable.length === 0) {
         return React.createElement(
             "div",
-            { className: "domoList" },
+            { className: "contentList" },
             React.createElement(
                 "h3",
-                { className: "emptyDomo" },
-                "No Domos yet"
+                { className: "emptyContent" },
+                "No Content yet"
             )
         );
     }
 
-    var domoNodes = props.domos.map(function (domo) {
+    var contentNodes = props.contentTable.map(function (content) {
         return React.createElement(
             "div",
-            { key: domo._id, "data-id": domo._id, className: "domo" },
-            React.createElement("img", { src: "/assets/img/domoface.jpeg", alt: "domo face", className: "domoFace" }),
+            { key: content._id, "data-id": content._id, className: "content" },
+            React.createElement("img", { src: content.image, alt: content.name, className: "contentImg" }),
             React.createElement(
                 "h3",
-                { className: "domoName" },
+                { className: "contentName" },
                 " Name: ",
-                domo.name,
+                content.name,
                 " "
             ),
             React.createElement(
                 "h3",
-                { className: "domoAge" },
-                " Age: ",
-                domo.age,
+                { className: "contentType" },
+                " Type: ",
+                content.type,
                 " "
             ),
             React.createElement(
                 "h3",
-                { className: "domoThickness" },
-                "Thickness: ",
-                domo.thickness
+                { className: "contentStatus" },
+                "Status: ",
+                content.status
+            ),
+            React.createElement(
+                "h3",
+                { className: "contentYear" },
+                " Year: ",
+                content.year,
+                " "
             ),
             React.createElement(
                 "button",
-                { className: "deleteButton", onClick: deleteDomo },
+                { className: "deleteButton", onClick: deleteContent },
                 "Delete"
             )
         );
@@ -112,21 +186,21 @@ var DomoList = function DomoList(props) {
 
     return React.createElement(
         "div",
-        { className: "domoList" },
-        domoNodes
+        { className: "contentTable" },
+        contentNodes
     );
 };
 
-var loadDomosFromServer = function loadDomosFromServer() {
+var loadContentFromServer = function loadContentFromServer() {
     sendAjax('GET', '/getDomos', null, function (data) {
-        ReactDOM.render(React.createElement(DomoList, { domos: data.domos }), document.querySelector("#domos"));
+        ReactDOM.render(React.createElement(ContentTable, { contentTable: data.domos }), document.querySelector("#contentTable"));
     });
 };
 
 var setup = function setup(csrf) {
-    ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector("#makeDomo"));
-    ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector("#domos"));
-    loadDomosFromServer();
+    ReactDOM.render(React.createElement(ContentForm, { csrf: csrf }), document.querySelector("#addContent"));
+    ReactDOM.render(React.createElement(ContentForm, { contentTable: [] }), document.querySelector("#contentTable"));
+    loadContentFromServer();
 };
 
 var getToken = function getToken() {
