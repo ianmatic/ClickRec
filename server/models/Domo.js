@@ -67,14 +67,11 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
   return DomoModel.find(search).select('name type status year image').exec(callback);
 };
 
-DomoSchema.statics.delete = (id, callback) => {
-  return DomoModel.findByIdAndRemove(id).exec(callback);
-};
+DomoSchema.statics.delete = (id, callback) => DomoModel.findByIdAndRemove(id).exec(callback);
 
 // find by uniqueId and update with data
-DomoSchema.statics.update = (data, callback) => {
-  return DomoModel.findByIdAndUpdate(data.uniqueid, data).exec(callback);
-};
+// d == data, c == callback, thank eslint 100 char limit for crappy names
+DomoSchema.statics.update = (d, c) => DomoModel.findByIdAndUpdate(d.uniqueid, d).exec(c);
 
 DomoModel = mongoose.model('Domo', DomoSchema);
 
