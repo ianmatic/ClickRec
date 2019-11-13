@@ -24,13 +24,13 @@ const DomoSchema = new mongoose.Schema({
   status: {
     type: String,
     trim: true,
-    required: true
+    required: true,
   },
 
   year: {
     type: Number,
     min: 0,
-    required: false
+    required: false,
   },
 
   image: {
@@ -67,7 +67,14 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
   return DomoModel.find(search).select('name type status year image').exec(callback);
 };
 
-DomoSchema.statics.delete = (id, callback) => DomoModel.findByIdAndRemove(id).exec(callback);
+DomoSchema.statics.delete = (id, callback) => {
+  return DomoModel.findByIdAndRemove(id).exec(callback);
+};
+
+// find by uniqueId and update with data
+DomoSchema.statics.update = (data, callback) => {
+  return DomoModel.findByIdAndUpdate(data.uniqueid, data).exec(callback);
+};
 
 DomoModel = mongoose.model('Domo', DomoSchema);
 

@@ -31,6 +31,50 @@ var deleteContent = function deleteContent(e) {
     });
 };
 
+// enable editing on all elements in table
+var editContent = function editContent(e) {
+    // update edit button
+    var editButton = $("#editButton");
+    editButton.html('Save');
+    editButton.off('click');
+    editButton.click(saveContent);
+
+    // enable editing
+    $(".content").attr("contenteditable", true);
+};
+// save changes made to table
+var saveContent = function saveContent(e) {
+    // update edit button
+    var editButton = $("#editButton");
+    editButton.html('Edit Table');
+    editButton.off('click');
+    editButton.click(editContent);
+
+    // disable editing
+    var contentItems = $(".content");
+    contentItems.attr("contenteditable", false);
+
+    // build array full of new items
+    var items = [];
+    for (var i = 0; i < contentItems.length; i++) {
+        var dataObj = {};
+        dataObj.name = contentItems.find(".contentName")[i].innerText.split(':')[1].trim();
+        dataObj.type = contentItems.find(".contentType")[i].innerText.split(':')[1].trim();
+        dataObj.status = contentItems.find(".contentStatus")[i].innerText.split(':')[1].trim();
+        dataObj.year = contentItems.find(".contentYear")[i].innerText.split(':')[1].trim();
+        dataObj.image = contentItems.find("img")[i].getAttribute("src");
+        dataObj.id = contentItems[i].getAttribute("data-id");
+        items.push(dataObj);
+    }
+
+    // send ajax for all items to update them
+    for (var _i = 0; _i < items.length; _i++) {
+        var data = "name=" + items[_i].name + ("&type=" + items[_i].type) + ("&year=" + items[_i].year) + ("&image=" + items[_i].image) + ("&status=" + items[_i].status) + ("&uniqueid=" + items[_i].id) + ("&_csrf=" + csrfToken);
+        sendAjax('PUT', '/maker', data); // update on server
+    }
+};
+$("#editButton").click(editContent);
+
 // The form for adding new content
 var ContentForm = function ContentForm(props) {
     return React.createElement(

@@ -1,13 +1,14 @@
+// display error message
 const handleError = (message) => {
     $("#errorMessage").text(message);
-    $("#domoMessage").animate({width:'toggle'}, 350);
 };
 
+// redirect to different page
 const redirect = (response) => {
-    $("#domoMessage").animate({width: 'hide'}, 350);
     window.location = response.redirect;
 };
 
+// ajax helper function
 const sendAjax = (type, action, data, success) => {
     $.ajax({
         cache: false,

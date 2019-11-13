@@ -4,6 +4,10 @@ html, body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    background-color: #ffb266;
+}
+a {
+    text-decoration: underline;
 }
 
 #logo {
@@ -84,10 +88,8 @@ nav:nth-child(1) {
 }
 
 .mainForm {
-    height: 300px;
-    width: 350px;
+    width: 85%;
     margin: 0 auto;
-    padding-top: 350px;
     font-size: 1.2em;
 }
 
@@ -96,27 +98,16 @@ nav:nth-child(1) {
 }
 
 .mainForm label {
-    display: inline-block;
-    width: 100px;
-    margin-right: 10px;
-    text-align: right;
-    font-size: 1.2em;
+    font-size: .75rem;
 }
 
 .formSubmit {
-    transition: background-color 0.4s ease;
-    display: block;
-    text-align: center;
     margin: 0 auto;
-    margin-top: 14px;
-    font-size: 1.2em;
-    width: 100px;
-    background-color: #55acee;
-    border-radius: 2px;
-    border-color: #66acee;
-    padding: 3px 0px;
-    color: white;
-    text-decoration: none;
+    display: block;
+    margin-top: 3rem;
+    border-radius: 0;
+    width: 100%;
+    height: 3rem;
 }
 
 .formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active {
@@ -128,11 +119,60 @@ nav:nth-child(1) {
     background-color: #338acc;
 }
 
-#user, #pass, #pass2 {
+.titleHeader {
     text-align: center;
-    font-size: 1.1em;
-    width: 180px;
-    border-radius: 6px;
+    margin-top: 150px;
+    margin-bottom: 50px;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+}
+
+#user, #pass, #pass2 {
+    width: 100%;
+    font-size: 16px;
+    height: 3rem;
+    padding-left: 10px;
+}
+
+#user, .passwordWrapper  {
+    border: 1px solid black;
+}
+
+.passwordWrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+#pass, #pass2 {
+    width: 85%;
+    outline: none;
+    border: none;
+}
+
+.showButton {
+    border-radius: 0;
+    background: white;
+    color: black;
+    width: 15%;
+    border: none;
+    display: inline-block;
+    position: absolute;
+    height: 100%;
+}
+
+.showButton:hover, .showButton:focus, .showButton:active {
+    background: white !important;
+    color: black !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 #user:focus, #pass:focus, #pass2:focus {
@@ -165,10 +205,8 @@ nav:nth-child(1) {
 }
 
 #errorMessage {
-    font-size: 1.2em;
-    font-weight: bold;
     color: red;
-    font-style: italic;
+    text-align: center;
 }
 
 #domo {
@@ -255,6 +293,11 @@ h3.contentType {
 }
 
 
-#domoThickness {
-    margin-left: 3em;
+.window {
+    margin: 0 auto;
+    width: 50%;
+    max-width: 500px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background-color: white;
 }

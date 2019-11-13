@@ -29,6 +29,57 @@ const deleteContent = (e) => {
     });
 }
 
+// enable editing on all elements in table
+const editContent = (e) => {
+    // update edit button
+    const editButton = $("#editButton");
+    editButton.html('Save');
+    editButton.off('click');
+    editButton.click(saveContent);
+
+    // enable editing
+    $(".content").attr("contenteditable", true);
+}
+// save changes made to table
+const saveContent = (e) => {
+    // update edit button
+    const editButton = $("#editButton");
+    editButton.html('Edit Table');
+    editButton.off('click');
+    editButton.click(editContent);
+
+    // disable editing
+    const contentItems = $(".content");
+    contentItems.attr("contenteditable", false);
+
+    // build array full of new items
+    let items = [];
+    for (let i = 0; i < contentItems.length; i++) {
+        let dataObj = {};
+        dataObj.name = contentItems.find(".contentName")[i].innerText.split(':')[1].trim();
+        dataObj.type = contentItems.find(".contentType")[i].innerText.split(':')[1].trim();
+        dataObj.status = contentItems.find(".contentStatus")[i].innerText.split(':')[1].trim();
+        dataObj.year = contentItems.find(".contentYear")[i].innerText.split(':')[1].trim();
+        dataObj.image = contentItems.find("img")[i].getAttribute("src");
+        dataObj.id = contentItems[i].getAttribute("data-id");
+        items.push(dataObj);
+    }
+
+    // send ajax for all items to update them
+    for (let i = 0; i < items.length; i++) {
+        const data = `name=${items[i].name}` + 
+        `&type=${items[i].type}` +
+        `&year=${items[i].year}` +
+        `&image=${items[i].image}` +
+        `&status=${items[i].status}` + 
+        `&uniqueid=${items[i].id}` +
+        `&_csrf=${csrfToken}`;
+        sendAjax('PUT', '/maker', data); // update on server
+    }
+
+};
+$("#editButton").click(editContent);
+
 // The form for adding new content
 const ContentForm = (props) => {
     return (
