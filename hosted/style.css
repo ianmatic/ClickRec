@@ -286,13 +286,8 @@ nav {
 
 
 img.contentImg {
-    margin-left: 25px;
-    margin-right: 10px;
-    height: 50px;
-    width: 50px;
-    border-radius: 4px;
-    margin-top:10px;
-    float:left;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 #userWrapper {
@@ -450,6 +445,7 @@ tbody{
   .dataCell {
     vertical-align: middle !important;
     font-size: 1.5em;
+    word-break: break-all;
 }
 #deleteAllButton {
     margin-left: 85%;
