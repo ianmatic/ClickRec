@@ -326,18 +326,14 @@ const Controls = (props) => {
                     {/*Type*/}
                     <div className="form-group row inputField">
                         <label className="col-2 col-form-label" for="type">Type*: </label>
-                        <div className="col-4">
+                        <div className="col-6">
                             <select className="custom-select" id="typeField" name="type" required="">
                                 <option value="film">Film</option>
                                 <option value="tv">TV</option>
                                 <option value="game">Game</option>
                                 <option value="literature">Literature</option>
                                 <option value="music">Music</option>
-                                <option value="other">Other</option>
                             </select>
-                        </div>
-                        <div className="col-4" id="otherContainer">
-                            <input className="form-control" id="otherField" type="text" name="other" placeholder="Other" disabled />
                         </div>
                     </div>
                     {/*Status*/}

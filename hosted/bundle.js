@@ -330,7 +330,7 @@ var Controls = function Controls(props) {
                     ),
                     React.createElement(
                         "div",
-                        { className: "col-4" },
+                        { className: "col-6" },
                         React.createElement(
                             "select",
                             { className: "custom-select", id: "typeField", name: "type", required: "" },
@@ -358,18 +358,8 @@ var Controls = function Controls(props) {
                                 "option",
                                 { value: "music" },
                                 "Music"
-                            ),
-                            React.createElement(
-                                "option",
-                                { value: "other" },
-                                "Other"
                             )
                         )
-                    ),
-                    React.createElement(
-                        "div",
-                        { className: "col-4", id: "otherContainer" },
-                        React.createElement("input", { className: "form-control", id: "otherField", type: "text", name: "other", placeholder: "Other", disabled: true })
                     )
                 ),
                 React.createElement(
