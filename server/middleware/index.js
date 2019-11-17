@@ -1,3 +1,5 @@
+
+// requires login to access this page, so redirect to landing page
 const requiresLogin = (req, res, next) => {
   if (!req.session.account) {
     return res.redirect('/');
@@ -5,12 +7,14 @@ const requiresLogin = (req, res, next) => {
   return next();
 };
 
+// requires to not be logged in to access this page, so redirect to main app
 const requiresLogout = (req, res, next) => {
   if (req.session.account) {
     return res.redirect('/main');
   }
   return next();
 };
+
 
 const requiresSecure = (req, res, next) => {
   if (req.headers['x-forwarded-proto'] !== 'https') {
@@ -19,6 +23,7 @@ const requiresSecure = (req, res, next) => {
   return next();
 };
 
+// bypass requiresSecure when in development
 const bypassSecure = (req, res, next) => {
   next();
 };

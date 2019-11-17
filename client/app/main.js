@@ -15,11 +15,13 @@ $("#imageHeader").click(() => {
     sortContent(4);
 });
 
+// stop propagation to allow multi-level select
 $('.dropdown-menu option, .dropdown-menu select').click(function (e) {
     e.stopPropagation();
 });
 
 
+// match filter color with selection
 $("#statusFilter, #typeFilter").change(() => {
     const select = $("#statusFilter");
     select.css("background-color", select.find(":selected").css("background-color"));
@@ -28,6 +30,7 @@ $("#statusFilter, #typeFilter").change(() => {
 });
 
 
+// delete all button
 $("#deleteAllButton").click(() => {
     // select all
     let buttons = document.querySelectorAll(".deleteButton");
@@ -59,7 +62,7 @@ $("#deleteAllButton").click(() => {
 $("#searchInput").on('input change keyup paste', () => {
 
     let inputValue = $("#searchInput").val().toLowerCase();
-    inputValue = inputValue.replace(/ +/g, "");
+    inputValue = inputValue.replace(/ +/g, ""); // take out spaces
 
     const rows = $(".mediaRow");
     // empty so display all

@@ -4,10 +4,14 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 let AccountModel = {};
+
+// encryption
 const iterations = 10000;
 const saltLength = 64;
 const keyLength = 64;
 
+
+// Schema
 const AccountSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -30,15 +34,19 @@ const AccountSchema = new mongoose.Schema({
   },
 });
 
+
+// each account returns an id and username
 AccountSchema.statics.toAPI = doc => ({
-  // _id is built into your mongo document and is guaranteed to be unique
+  // _id is built into mongo document and is guaranteed to be unique
   username: doc.username,
   _id: doc._id,
 });
 
+// check if password is valid
 const validatePassword = (doc, password, callback) => {
   const pass = doc.password;
 
+  // encrypt the attempted password and check if that equals the already encrypted password
   return crypto.pbkdf2(password, doc.salt, iterations, keyLength, 'RSA-SHA512', (err, hash) => {
     if (hash.toString('hex') !== pass) {
       return callback(false);
@@ -47,6 +55,7 @@ const validatePassword = (doc, password, callback) => {
   });
 };
 
+// helper function to find by username
 AccountSchema.statics.findByUsername = (name, callback) => {
   const search = {
     username: name,
@@ -55,6 +64,7 @@ AccountSchema.statics.findByUsername = (name, callback) => {
   return AccountModel.findOne(search, callback);
 };
 
+// generate crypto hash for password encryption
 AccountSchema.statics.generateHash = (password, callback) => {
   const salt = crypto.randomBytes(saltLength);
 
@@ -63,6 +73,7 @@ AccountSchema.statics.generateHash = (password, callback) => {
   );
 };
 
+// checks username/password for login
 AccountSchema.statics.authenticate = (username, password, callback) =>
 AccountModel.findByUsername(username, (err, doc) => {
   if (err) {

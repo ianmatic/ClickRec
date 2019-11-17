@@ -27,11 +27,12 @@ var handlePasswordChange = function handlePasswordChange(e) {
 // Handles updating username
 var handleUsernameChange = function handleUsernameChange(e) {
     e.preventDefault("username");
-    // signup
+    // change username
     sendAjax('PUT', $("#changeUsernameForm").attr("action"), $("#changeUsernameForm").serialize(), function (result) {
         username = result.username;
         handleSuccess("username");
         $("#successMessage").click(function (e) {
+            // setup success message link
             e.preventDefault();
             createMainWindow(csrf);
         });
@@ -198,6 +199,7 @@ var ChangePasswordWindow = function ChangePasswordWindow(props) {
     );
 };
 
+// change username window with form
 var ChangeUsernameWindow = function ChangeUsernameWindow(props) {
     return (
         // below top header
@@ -271,6 +273,7 @@ var createChangePasswordWindow = function createChangePasswordWindow(csrf) {
     });
 };
 
+// render a new change username window
 var createChangeUsernameWindow = function createChangeUsernameWindow(csrf) {
     ReactDOM.render(React.createElement(ChangeUsernameWindow, { csrf: csrf }), document.querySelector("#settingsContent"));
 };
@@ -287,6 +290,7 @@ var createMainWindow = function createMainWindow(csrf) {
         return false;
     });
 
+    // setup changeUsername link
     var changeUsernameLink = document.querySelector("#changeUsernameLink");
     changeUsernameLink.addEventListener("click", function (e) {
         e.preventDefault();
@@ -309,6 +313,13 @@ var createMainWindow = function createMainWindow(csrf) {
                 $(btn).siblings().attr("type", "password");
             }
     });
+};
+
+// display success message in settings
+var handleSuccess = function handleSuccess(keyword) {
+    var successDiv = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to settings.</p>";
+    $(successDiv).insertAfter($("form"));
+    $("#errorMessage").empty();
 };
 
 // default to login window
@@ -335,12 +346,6 @@ $(document).ready(function () {
 var handleError = function handleError(message) {
     $("#errorMessage").text(message);
     $("#successMessage").empty();
-};
-
-var handleSuccess = function handleSuccess(keyword) {
-    var successDiv = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to settings.</p>";
-    $(successDiv).insertAfter($("form"));
-    $("#errorMessage").empty();
 };
 
 // redirect to different page

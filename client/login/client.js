@@ -1,4 +1,3 @@
-
 // Handles logging into app
 const handleLogin = (e) => {
     e.preventDefault();

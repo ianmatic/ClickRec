@@ -17,10 +17,12 @@ $("#imageHeader").click(function () {
     sortContent(4);
 });
 
+// stop propagation to allow multi-level select
 $('.dropdown-menu option, .dropdown-menu select').click(function (e) {
     e.stopPropagation();
 });
 
+// match filter color with selection
 $("#statusFilter, #typeFilter").change(function () {
     var select = $("#statusFilter");
     select.css("background-color", select.find(":selected").css("background-color"));
@@ -28,6 +30,7 @@ $("#statusFilter, #typeFilter").change(function () {
     filterRows($("#typeFilter").val(), $("#statusFilter").val());
 });
 
+// delete all button
 $("#deleteAllButton").click(function () {
     // select all
     var buttons = document.querySelectorAll(".deleteButton");
@@ -58,7 +61,7 @@ $("#deleteAllButton").click(function () {
 $("#searchInput").on('input change keyup paste', function () {
 
     var inputValue = $("#searchInput").val().toLowerCase();
-    inputValue = inputValue.replace(/ +/g, "");
+    inputValue = inputValue.replace(/ +/g, ""); // take out spaces
 
     var rows = $(".mediaRow");
     // empty so display all
@@ -588,12 +591,6 @@ var loadContentFromServer = function loadContentFromServer() {
 var handleError = function handleError(message) {
     $("#errorMessage").text(message);
     $("#successMessage").empty();
-};
-
-var handleSuccess = function handleSuccess(keyword) {
-    var successDiv = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to settings.</p>";
-    $(successDiv).insertAfter($("form"));
-    $("#errorMessage").empty();
 };
 
 // redirect to different page

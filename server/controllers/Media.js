@@ -1,5 +1,7 @@
 const models = require('../models');
 const Media = models.Media;
+
+//
 const mainPage = (req, res) => {
   Media.MediaModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
@@ -10,12 +12,13 @@ const mainPage = (req, res) => {
   });
 };
 
+// add a new media to the table
 const addMedia = (req, res) => {
-  // missing neccessary parameters
-  if (!req.body.name || !req.body.type || !req.body.status) {
-    return res.status(400).json({ error: 'RAWR! Name, Type, and Status are required' });
-  }
+
+  // use placeholder (empty) image if none is provided
   const imageURL = req.body.image === '' ? '/assets/img/default.png' : req.body.image;
+
+  // build the neccessary data
   const mediaData = {
     name: req.body.name,
     type: req.body.type,
@@ -32,7 +35,7 @@ const addMedia = (req, res) => {
   mediaPromise.catch((err) => {
     console.log(err);
     if (err.code === 11000) {
-      return res.status(400).json({ error: 'Content already exists.' });
+      return res.status(400).json({ error: 'Media already exists.' });
     }
 
     return res.status(400).json({ error: 'An error occurred' });
@@ -40,6 +43,7 @@ const addMedia = (req, res) => {
   return mediaPromise;
 };
 
+// get a media by the owner session account id
 const getMedia = (req, res) => {
   const rq = req;
   const rs = res;
@@ -54,9 +58,12 @@ const getMedia = (req, res) => {
   });
 };
 
+// remove a media element from the account 
 const deleteMedia = (req, res) => {
   const rq = req;
   const rs = res;
+
+  // remove by unique id
   return Media.MediaModel.delete(rq.body.uniqueid, (err, docs) => {
     if (err) {
       console.log(err);
@@ -67,6 +74,7 @@ const deleteMedia = (req, res) => {
   });
 };
 
+// change the contents of a media item
 const updateMedia = (req, res) => {
   const rq = req;
   const rs = res;

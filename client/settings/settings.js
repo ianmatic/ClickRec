@@ -26,11 +26,11 @@ const handlePasswordChange = (e) => {
 // Handles updating username
 const handleUsernameChange = (e) => {
     e.preventDefault("username");
-    // signup
+    // change username
     sendAjax('PUT', $("#changeUsernameForm").attr("action"), $("#changeUsernameForm").serialize(), (result) => {
         username = result.username;
         handleSuccess("username");
-        $("#successMessage").click((e) => {
+        $("#successMessage").click((e) => { // setup success message link
             e.preventDefault();
             createMainWindow(csrf);
         })
@@ -113,6 +113,7 @@ const ChangePasswordWindow = (props) => {
     );
 };
 
+// change username window with form
 const ChangeUsernameWindow = (props) => {
     return (
         // below top header
@@ -170,6 +171,7 @@ const createChangePasswordWindow = (csrf) => {
     });
 };
 
+// render a new change username window
 const createChangeUsernameWindow = (csrf) => {
     ReactDOM.render(
         <ChangeUsernameWindow csrf={csrf} />,
@@ -192,6 +194,7 @@ const createMainWindow = (csrf) => {
         return false;
     });
 
+    // setup changeUsername link
     const changeUsernameLink = document.querySelector("#changeUsernameLink");
     changeUsernameLink.addEventListener("click", (e) => {
         e.preventDefault();
@@ -215,6 +218,13 @@ const createMainWindow = (csrf) => {
         }
     });
 };
+
+// display success message in settings
+const handleSuccess = (keyword) => {
+    const successDiv = `<p id="successMessage">Successfully updated your ${keyword}. <a href="" id="successLink">Click here</a> to go back to settings.</p>`
+    $(successDiv).insertAfter($("form"));
+    $("#errorMessage").empty();
+}
 
 // default to login window
 const setup = (csrf) => {

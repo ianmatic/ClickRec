@@ -1,13 +1,19 @@
 const models = require('../models');
 const https = require('https');
 const Account = models.Account;
+
+// render login page
 const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
+
+// destroy current session
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
 };
+
+// login the user on server side
 const login = (req, res) => {
   const rq = req;
   const rs = res;
@@ -19,6 +25,8 @@ const login = (req, res) => {
     return rs.status(400).json({ error: 'All fields are required' });
   }
 
+
+  // authenticate the user
   return Account.AccountModel.authenticate(username, password, (err, account) => {
     if (err || !account) {
       return rs.status(401).json({ error: 'Wrong username or password' });
@@ -31,6 +39,7 @@ const login = (req, res) => {
   });
 };
 
+// signup the user server side
 const signup = (req, res) => {
   const rq = req;
   const rs = res;
@@ -70,6 +79,7 @@ const signup = (req, res) => {
     // validated, no reason to return
   });
 
+  // generate an encrypted password hash
   return Account.AccountModel.generateHash(rq.body.pass, (salt, hash) => {
     const accountData = {
       username: rq.body.username,
@@ -98,9 +108,12 @@ const signup = (req, res) => {
   });
 };
 
+// render the settings page
 const settingsPage = (req, res) => {
   res.render('settings', { csrfToken: req.csrfToken() });
 };
+
+// get the csrf token
 const getToken = (req, res) => {
   const rq = req;
   const rs = res;
@@ -111,6 +124,8 @@ const getToken = (req, res) => {
 
   rs.json(csrfJSON);
 };
+
+// get username (not password bc you can't decrypt a hash)
 const getCredentials = (req, res) => {
   const rq = req;
   const rs = res;
@@ -121,8 +136,8 @@ const getCredentials = (req, res) => {
   return rs.json(credentials);
 };
 
+// change username
 const changeUsername = (req, res) => {
-  console.log('IN USERNAME');
   const rq = req;
   const rs = res;
 
@@ -145,10 +160,12 @@ const changeUsername = (req, res) => {
   });
 };
 
+// change password
 const changePassword = (req, res) => {
   const rq = req;
   const rs = res;
-  console.log(rq.session.account);
+
+  // generate a new hash and set that as the new password
   return Account.AccountModel.generateHash(rq.body.pass, (salt, hash) => {
     const updatePromise = Account.AccountModel.update({ _id: rq.session.account._id },
       { $set: { password: hash, salt } });

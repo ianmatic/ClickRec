@@ -7,6 +7,8 @@ let MediaModel = {};
 const convertId = mongoose.Types.ObjectId;
 const setName = (name) => _.escape(name).trim();
 
+
+// Schema
 const MediaSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -51,6 +53,7 @@ const MediaSchema = new mongoose.Schema({
   },
 });
 
+// each media item contains a name, type, status, notes and image
 MediaSchema.statics.toAPI = (doc) => ({
   name: doc.name,
   type: doc.type,
@@ -59,6 +62,7 @@ MediaSchema.statics.toAPI = (doc) => ({
   image: doc.image,
 });
 
+// find the media by its properties
 MediaSchema.statics.findByOwner = (ownerId, callback) => {
   const search = {
     owner: convertId(ownerId),
@@ -67,6 +71,7 @@ MediaSchema.statics.findByOwner = (ownerId, callback) => {
   return MediaModel.find(search).select('name type status notes image').exec(callback);
 };
 
+// delete media by uniqueid
 MediaSchema.statics.delete = (id, callback) => MediaModel.findByIdAndRemove(id).exec(callback);
 
 // find by uniqueId and update with data

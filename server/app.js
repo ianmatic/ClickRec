@@ -13,12 +13,15 @@ const csrf = require('csurf');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/ClickRec';
 
+// connect mongodb
 mongoose.connect(dbURL, (err) => {
   if (err) {
     console.log('Could not connect to database');
     throw err;
   }
 });
+
+// setup redis
 let redisURL = {
   hostname: 'redis-19880.c57.us-east-1-4.ec2.cloud.redislabs.com',
   port: 19880,
@@ -32,13 +35,16 @@ const router = require('./router.js');
 
 
 const app = express();
+
+// use hosted/assets folder
 app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
-app.use(favicon(`${__dirname}/../hosted/img/logo.png`));
+app.use(favicon(`${__dirname}/../hosted/img/favicon.ico`)); // favicon
 app.disable('x-powered-by');
 app.use(compression());
 app.use(bodyParser.urlencoded({
   extended: true,
 }));
+// use redis sessions
 app.use(session({
   key: 'sessionid',
   store: new RedisStore({
@@ -53,11 +59,16 @@ app.use(session({
     httpOnly: true,
   },
 }));
+// use handlebars
 app.engine('handlebars', expressHandlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
+
+// use views folder
 app.set('views', `${__dirname}/../views`);
 app.use(cookieParser());
 app.use(csrf());
+
+// check for csrf token
 app.use((err, req, res, next) => {
   if (err.code !== 'EBADCSRFTOKEN') return next(err);
 
