@@ -1,3 +1,4 @@
+
 // Handles logging into app
 const handleLogin = (e) => {
     e.preventDefault();
@@ -41,7 +42,7 @@ const LoginWindow = (props) => {
                     onSubmit={handleLogin}
                     action="/login"
                     method="POST"
-                    className="mainForm"
+                    className="startForm"
                 >
                     {/*Username*/}
                     <div className="inputWrapper">
@@ -59,13 +60,14 @@ const LoginWindow = (props) => {
                     </div>
                     {/*CSRF is invisible*/}
                     <input type="hidden" name="_csrf" value={props.csrf} />
-                    <input className="formSubmit btn btn-outline-primary" type="submit" value="Sign Up" />
+                    <input className="startSubmit btn btn-outline-primary" type="submit" value="Login" />
                 </form>
             </div>
         </div>
     );
 };
 
+// Signup page
 const SignupWindow = (props) => {
     return (
         // below top header
@@ -83,7 +85,7 @@ const SignupWindow = (props) => {
                     onSubmit={handleSignup}
                     action="/signup"
                     method="POST"
-                    className="mainForm"
+                    className="startForm"
                 >
                     {/*Username*/}
                     <div className="inputWrapper">
@@ -96,21 +98,23 @@ const SignupWindow = (props) => {
                         {/*Actual password field only takes up part of space, show password button takes up the rest */}
                         <div className="passwordWrapper">
                             <input id="pass" type="password" name="pass" placeholder="Choose Password" required />
-                            <button type="button" className="btn btn-primary showButton">Show</button>
+                            <button type="button" className="btn btn-primary showButton" tabIndex="-1">Show</button>
                         </div><br />
                     </div>
                     {/*Confirm Password*/}
                     <div className="inputWrapper">
-                        <label htmlFor="pass2"> Retype Password</label><br />
+                        <label htmlFor="pass2">Confirm Password</label><br />
                         {/*Actual password field only takes up part of space, show password button takes up the rest */}
                         <div className="passwordWrapper">
                             <input id="pass2" type="password" name="pass2" placeholder="Retype Password" required />
-                            <button type="button" className="btn btn-primary showButton">Show</button>
+                            <button type="button" className="btn btn-primary showButton" tabIndex="-1">Show</button>
                         </div>
                     </div> <br />
+                    {/*Captcha*/}
+                    <div id="recaptcha" data-sitekey="6Lc1lsIUAAAAAFTfmkhNent8xUg2NZzgP-ahr9Ws"></div>
                     {/*CSRF is invisible*/}
                     <input type="hidden" name="_csrf" value={props.csrf} />
-                    <input className="formSubmit btn btn-outline-primary" type="submit" value="Login" />
+                    <input className="startSubmit btn btn-outline-primary" type="submit" value="Sign Up" />
                 </form>
             </div>
         </div>
@@ -121,7 +125,7 @@ const SignupWindow = (props) => {
 const createLoginWindow = (csrf) => {
     ReactDOM.render(
         <LoginWindow csrf={csrf} />,
-        document.querySelector("#content")
+        document.querySelector("#loginContent")
     );
 
     // setup signup link
@@ -153,8 +157,12 @@ const createLoginWindow = (csrf) => {
 const createSignupWindow = (csrf) => {
     ReactDOM.render(
         <SignupWindow csrf={csrf} />,
-        document.querySelector("#content")
+        document.querySelector("#loginContent")
     );
+
+    grecaptcha.render("recaptcha", {
+        sitekey: '6Lc1lsIUAAAAAFTfmkhNent8xUg2NZzgP-ahr9Ws'
+    });
 
     // setup login link
     const loginbutton = document.querySelector("#loginLink");

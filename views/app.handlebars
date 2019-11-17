@@ -1,6 +1,7 @@
 <html lang="en">
+
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="utf-8" />
   <title>ClickREC</title>
   <script crossorigin src="https://unpkg.com/react@15/dist/react.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
@@ -8,27 +9,104 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
-  <link rel="shortcut icon" href="/assets/img/favicon.png"/>
-  <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
-  <link
-  rel="stylesheet"
-  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-  crossorigin="anonymous"
-/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <link rel="shortcut icon" href="/assets/img/favicon.png" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/style.css" />
 </head>
+
 <body>
-  <nav><a href="/login"><img id="logo" src="/assets/img/logo.png" alt="face logo"/></a>
-    <div class="navlink"><a href="/logout">Log out</a></div>
-    <button id="editButton">Edit Table</button>
+  <nav>
+    <a href="/main" id="logoWrapper">
+      <img id="logo" src="/assets/img/logo.png" alt="ClickREC Logo" />
+      <h1 id="title">ClickREC</h1>
+    </a>
+    <div id="navControls">
+      <!--Search field-->
+      <div class="input-group" id="searchWrapper">
+        <input id="searchInput" class="form-control" placeholder="Search for keyword" type="text">
+      </div>
+      <!--Filter-->
+      <div class="btn-group" id="filterDropdown">
+        <button class="btn" type="button" id="filterDropDown" data-toggle="dropdown">
+          <i id="filterIcon" class="fas fa-filter"></i>
+        </button>
+        <div class="dropdown-menu" role="menu" id="filterDropdownMenu">
+          <select data-toggle="dropdown" class="form-control filterSelect" id="statusFilter">
+            <option class="allFilter" value="all">All Statuses</option>
+            <option class="wishList" value="wishList">Wishlist</option>
+            <option class="inProgress" value="inProgress">In Progress</option>
+            <option class="complete" value="complete">Complete</option>
+          </select>
+          <select data-toggle="dropdown" class="form-control filterSelect" id="typeFilter">
+            <option value="all">All Types</option>
+            <option value="film">Film</option>
+            <option value="tv">TV</option>
+            <option value="game">Game</option>
+            <option value="literature">Literature</option>
+            <option value="music">Music</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <!--Edit-->
+      <button class="btn" id="editButton" type="button"><i class="fas fa-edit"></i></button>
+      <!--User Icon-->
+      <div class="btn-group" id="userWrapper">
+        <i data-toggle="dropdown" id="userIcon" class="fas fa-user"></i>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="/settings">Settings</a>
+          <a class="dropdown-item" href="/logout">Sign Out</a>
+        </div>
+      </div>
+    </div>
+
   </nav>
-  <section id="addContent">
+  <!--Add and edit-->
+  <section id="controls">
   </section>
-  <section id="contentTable">
-  </section>
-  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/logo.png" alt="logo"/>
+  <div id="filterContainer">
+  </div>
+  <!--Table-->
+  <div id="tableContainer">
+    <button class="btn btn-outline-primary" id="deleteAllButton" type="button">Select All</button>
+    <table class="table table-striped" id="contentTable">
+      <!--Set width for each column-->
+      <colgroup>
+        <col width="5.5%">
+        <col width="23.75%">
+        <col width="23.75%">
+        <col width="23.75%">
+        <col width="23.75%">
+      </colgroup>
+      <thead>
+
+        <tr>
+          <th class="tableHeader" id="statusHeader"></th>
+          <th class="tableHeader" id="nameHeader">Name</th>
+          <th class="tableHeader" id="typeHeader">Type</th>
+          <th class="tableHeader" id="notesHeader">Notes</th>
+          <th class="tableHeader" id="imageHeader">Image</th>
+        </tr>
+      </thead>
+      <tbody id="target">
+        <!--Filled by JS and node-->
+      </tbody>
+    </table>
+    <h1 class="emptyContent">No Media Found</h1>
   </div>
   <script src="/assets/bundle.js"></script>
 </body>
+
 </html>

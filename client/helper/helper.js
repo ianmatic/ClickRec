@@ -1,7 +1,14 @@
 // display error message
 const handleError = (message) => {
     $("#errorMessage").text(message);
+    $("#successMessage").empty();
 };
+
+const handleSuccess = (keyword) => {
+    const successDiv = `<p id="successMessage">Successfully updated your ${keyword}. <a href="" id="successLink">Click here</a> to go back to settings.</p>`
+    $(successDiv).insertAfter($("form"));
+    $("#errorMessage").empty();
+}
 
 // redirect to different page
 const redirect = (response) => {

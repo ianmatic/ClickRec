@@ -13,13 +13,21 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
   <link rel="stylesheet" type="text/css" href="/assets/style.css" />
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,600,700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <nav><a href="/login"><img id="logo" src="/assets/img/logo.png" alt="ClickREC Logo" /></a>
+  <nav>
+    <a href="/main" id="logoWrapper">
+      <img id="logo" src="/assets/img/logo.png" alt="ClickREC Logo" />
+      <h1 id="title">ClickREC</h1>
+    </a>
   </nav>
-  <section id="content"></section>
+  <section id="loginContent">
+  </section>
   <script src="/assets/loginBundle.js"></script>
+  <!--Load after page has been loaded through bundle-->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 
 </html>

@@ -1,34 +1,223 @@
+/*General*/
 html, body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background-color: #ffb266;
+    background-color: white;
+    font-family: 'Quicksand', sans-serif !important;
+    font-weight: 500 !important;
+}
+body {
+  background: linear-gradient(rgba(255,255,255,.85), rgba(255,255,255,.85)), url("img/pattern.png");
+  background-size: cover;
 }
 a {
     text-decoration: underline;
 }
 
+#logoWrapper {
+  width: 373px;
+  height: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ededed;
+  position: fixed;
+  border-bottom: 2px solid #bfbfbf;
+  color: black;
+  text-decoration: none;
+}
+
+#logoWrapper img {
+  max-width: 65px;
+  max-height: 65px;
+  margin-right: 20px;
+}
+
 #logo {
-    height: 40px;
-    width: 40;
-    padding-top: 5px;
-    float:left;
-    border-radius: 8px;
+  width: 65px;
+}
+#title {
+  font-weight: 600;
+  margin-right: 75px;
+  margin-top: 10px;
 }
 
 nav {
     width: 100%;
-    height: 50px;
-    background-color: #55acee;
+    height: 100px;
+    background-color: #ededed;
+    position: fixed;
+    z-index: 2;
+    border-bottom: 2px solid #bfbfbf;
 }
 
-nav:nth-child(1) {
-    padding-left: 25px;
+#errorMessage {
+  color: red;
+  text-align: center;
 }
 
-.navlink {
+#successMessage {
+  color: green;
+  text-align: center;
+  margin-top: 2em;
+  margin-bottom: 0;
+}
+
+/*Login/Register*/
+
+.window {
+  margin: 0 auto;
+  width: 50%;
+  max-width: 500px;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  background-color: #fafafa;
+  border: 2px solid #bfbfbf;
+}
+
+.startForm {
+  width: 85%;
+  margin: 0 auto;
+  font-size: 1.2em;
+}
+
+.startForm h3 {
+  text-align: center;
+}
+
+.startForm label {
+  font-size: .75rem;
+}
+
+#user, #pass, #pass2 {
+  width: 100%;
+  font-size: 16px;
+  height: 3rem;
+  padding-left: 10px;
+}
+
+#user, .passwordWrapper  {
+  border: 1px solid rgb(122, 122, 122);
+}
+
+.passwordWrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+#pass, #pass2 {
+  width: 85%;
+  outline: none;
+  border: none;
+}
+
+.showButton {
+  border-radius: 0;
+  background: white;
+  color: black;
+  width: 15%;
+  border: none;
+  display: inline-block;
+  position: absolute;
+  height: 100%;
+}
+
+.showButton:hover, .showButton:focus, .showButton:active {
+  background: white !important;
+  color: black !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#user:focus, #pass:focus, #pass2:focus {
+  outline: none;
+  box-shadow: 0px 0px 1px 1px #55acee;
+}
+
+.titleHeader {
+  text-align: center;
+  margin-bottom: 2.5%;
+  margin-top: 10%;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+}
+
+.startSubmit {
+  margin: 0 auto;
+  display: block;
+  margin-top: 3rem;
+  border-radius: 0;
+  width: 100%;
+  height: 3rem;
+}
+
+.startSubmit:link, .startSubmit:visited, .startSubmit:hover, .startSubmit:active {
+  color: white;
+}
+
+.startSubmit:hover {
+  transition: background-color 0.4s ease;
+  background-color: #338acc;
+}
+
+/*Settings*/
+#settingsMainWindow {
+  padding-left: 2em;
+  padding-right: 2em;
+}
+#windowTitle {
+  text-align: center;
+}
+
+#usernameInfo {
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #d5d5d5;
+}
+.credentialTitle {
+  margin-bottom: .5em;
+}
+#usernameCredential {
+  margin-bottom: .75em;
+  font-size: 1.25em;
+  font-weight: 600;
+}
+
+#passwordInfo {
+  margin-bottom: 1em;
+}
+
+#settingsIconWrapper {
+  float: right;
+  margin-right: 100px;
+  margin-top: 30px;
+}
+
+/*Main page*/
+
+.logoWrapperApp {
+  border-bottom: none !important;
+}
+
+.emptyContent {
+  text-align: center;
+  display: none;
+  margin-right: 5%;
+  margin-top: 2.5vh;
+}
+
+.exitButton {
     padding: 5px;
     padding-top: 12px;
     padding-left: 20px;
@@ -37,7 +226,7 @@ nav:nth-child(1) {
     float: left;
 }
 
-.navlink a, .navlink a:link, .navlink a:visited, .navlink a:hover, .navlink a:active {
+.exitButton a, .exitButton a:link, .exitButton a:visited, .exitButton a:hover, .exitButton a:active {
     color: white;
     text-decoration: none;
     padding: 5px;
@@ -46,208 +235,55 @@ nav:nth-child(1) {
     transition: background-color 0.4s ease;
 }
 
-.navlink a:hover {
+.exitButton a:hover {
     transition: background-color 0.8s ease;
     background-color: #66bdff;
 }
 
-.contentForm {
-    border: 2px solid #338acc;
-    height: 100px;
-    width: 1000px;
-    margin-top:0px;
-    padding-top:10px;
-    background-color: #55acee;
-    border-bottom-right-radius: 4px;
-    border-top-right-radius: 4px;
+#navControls {
+  width: 30%;
+  float: right;
+  margin-top: 30px;
+  margin-right: 100px;
+  display: flex;
+  justify-content: center;
 }
 
-.contentForm label {
+#filterDropdown {
+  margin-right: 5%;
+  margin-left: 5%;
 }
 
-.contentForm input[type=text] {
+#filterDropdownMenu {
+  width: 150px;
 }
 
-.addContentSubmit {
-    transition: background-color 0.4s ease;
-    display: inline;
-    width: 90px;
-    background-color: #55acee;
-    border-radius: 2px;
-    color: white;
-    text-decoration: none;
+#filterIcon {
+  transform: scale(1.75);
+  color: darkgray;
 }
 
-.addContentSubmit:link, .addContentSubmit:visited, .addContentSubmit:hover, .addContentSubmit:active {
-    color: white;
+.filterSelect {
+  margin: 5px;
+  width: 90% !important;
 }
 
-.addContentSubmit:hover {
-    transition: background-color 0.4s ease;
-    background-color: #338acc;
+.allFilter {
+  background-color: white;
 }
 
-.mainForm {
-    width: 85%;
-    margin: 0 auto;
-    font-size: 1.2em;
+#searchWrapper {
+  max-width: 80%;
 }
 
-.mainForm h3 {
-    text-align: center;
+#searchIcon {
+  width: 45px;
+}
+.fa-search {
+  color: white;
+  transform: scale(1.75);
 }
 
-.mainForm label {
-    font-size: .75rem;
-}
-
-.formSubmit {
-    margin: 0 auto;
-    display: block;
-    margin-top: 3rem;
-    border-radius: 0;
-    width: 100%;
-    height: 3rem;
-}
-
-.formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active {
-    color: white;
-}
-
-.formSubmit:hover {
-    transition: background-color 0.4s ease;
-    background-color: #338acc;
-}
-
-.titleHeader {
-    text-align: center;
-    margin-top: 150px;
-    margin-bottom: 50px;
-}
-
-.title {
-    font-weight: bold;
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-}
-
-.subtitle {
-    font-size: 1.25rem;
-}
-
-#user, #pass, #pass2 {
-    width: 100%;
-    font-size: 16px;
-    height: 3rem;
-    padding-left: 10px;
-}
-
-#user, .passwordWrapper  {
-    border: 1px solid black;
-}
-
-.passwordWrapper {
-    position: relative;
-    overflow: hidden;
-}
-
-#pass, #pass2 {
-    width: 85%;
-    outline: none;
-    border: none;
-}
-
-.showButton {
-    border-radius: 0;
-    background: white;
-    color: black;
-    width: 15%;
-    border: none;
-    display: inline-block;
-    position: absolute;
-    height: 100%;
-}
-
-.showButton:hover, .showButton:focus, .showButton:active {
-    background: white !important;
-    color: black !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-#user:focus, #pass:focus, #pass2:focus {
-    outline: none;
-    box-shadow: 0px 0px 1px 1px #55acee;
-}
-
-#domoMessage {
-    display:none;
-    top: 250px;
-    width: 250px;
-    height: 650px;
-    position: absolute;
-    z-index: 200;
-    right: 0px;
-    overflow: hidden;
-}
-
-#domoMessage h3 {
-    width: 200px;
-    position: absolute;
-    top: 0px;
-    left: 20px;
-}
-
-#speech {
-    height: 120px;
-    width: 250px;
-    z-index:300;
-}
-
-#errorMessage {
-    color: red;
-    text-align: center;
-}
-
-#domo {
-    z-index: 225;
-    margin-top: -20px;
-    margin-left: 135px;
-    height: 450px;
-    width: 300px;
-    -ms-transform: rotate(330deg);
-    -webkit-transform: rotate(330deg); 
-    transform: rotate(330deg);
-}
-
-#contentTable {
-    width: 40%;
-    min-width: 400px;
-    border: 2px solid #55acee;
-    border-radius: 4px;
-    margin: 0 auto;
-    margin-top: 100px;
-}
-
-.content {
-    width: 95%;
-    margin: 0 auto;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    border: 2px solid #55acee;
-    border-radius: 4px;
-    background-color: #55acee;
-    padding: 10px;
-    min-height:60px;
-    overflow: hidden;
-}
-
-.content:hover {
-    transition: border-color 0.2s ease-out;
-    border-color: rgba(255,255,255, 0.8);
-    transition: background-color 2.6s ease-out;
-    background-color: #66bfff;
-}
 
 img.contentImg {
     margin-left: 25px;
@@ -259,45 +295,209 @@ img.contentImg {
     float:left;
 }
 
-h3.emptyContent {
-    width: 400px;
-    font-size: 1.5em;
-    margin: 0 auto;
-    text-align: center;
-    margin-top: 18px;
+#userWrapper {
+  display: block;
 }
-
-h3.contentName {
-    float:left;
-    width: 200px;
-    font-weight: bold;
-    padding-left: 65px;
-    font-size: 1.5em;
-}
-
-h3.contentType {
-    float:right;
-    text-align: left;
-    width: 100px;
-    font-weight: bold;
-    padding-right: 40px;
-    font-size: 1.5em;
-}
-
-.content:first-child {
+#userIcon {
+    transform: scale(2);
+    color: darkgray;
     margin-top: 10px;
 }
 
-.content:last-child {
-    margin-bottom:10px;
+#userIcon:hover {
+  cursor: pointer;
 }
 
-
-.window {
-    margin: 0 auto;
-    width: 50%;
-    max-width: 500px;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    background-color: white;
+#controls {
+    float: left;
+    width: 375px;
+    height: 425px;
+    border-right: 2px solid #bfbfbf;
+    border-bottom: 2px solid #bfbfbf;
+    position: fixed;
+    background-color: #ededed;
+    z-index: 3;
+    top: 100px;
 }
+
+.controlsTitle {
+    margin-left: 30px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.col-2 {
+    max-width: 20% !important;
+}
+  .inputField {
+    margin-left: 15px !important;
+}
+  
+  /*add/get media form section*/
+  #addContentContainer, #getContentContainer {
+    margin-top: 25px;
+}
+  #allStatusOption {
+    background-color: #fff !important;
+}
+  #otherField, #getOtherField {
+    transition: background-color .25s;
+}
+  #addSubmitButton, #getSubmitButton {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#addSubmitButton.btn-secondary {
+  color: black;
+  background-color: #bfbfbf;
+}
+
+  .wishList {
+    background-color: #5C946F !important;
+}
+  .inProgress {
+    background-color: #f79257 !important;
+}
+  .complete {
+    background-color: #AED9F4 !important;
+}
+
+  #editButton {
+    margin-right: 6%;
+    color: darkgray;
+}
+
+  #editButton i {
+    transform: scale(1.75);
+  }
+
+  .editing {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  }
+
+  #tableContainer {
+    width: calc(100% - 375px);
+    margin-top: 120px;
+    z-index: 1;
+    position: relative;
+    float: right;
+}
+  #contentTable {
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+    margin-top: 3vh;
+    table-layout: fixed;
+    background: white;;
+}
+  /*content of table*/
+  .tableHeader{
+    border: none !important;
+}
+tbody{
+  font-weight: 500 !important;
+}
+  #nameHeader, #typeHeader, #notesHeader, #imageHeader {
+    cursor: pointer;
+}
+  /*status column (colored) with small dropdown*/
+  .statusColumn {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    overflow: visible;
+}
+  .dropdown-item {
+    cursor: pointer;
+}
+  .dropdown-toggle:empty::after {
+    margin-left: 0;
+    border-top: .6em solid;
+    border-left: .4em solid transparent;
+    border-right: .4em solid transparent;
+}
+  .dropdown-menu {
+    min-width: 10px;
+    width: 120px;
+}
+  .rowDropDownWrapper {
+    width: 25px;
+    height: 25px;
+    margin-left: auto;
+    margin-right: auto;
+}
+  .rowDropDown {
+    width: 100%;
+    height: 100%;
+    padding: 0 !important;
+    border: 1.25px solid #fff !important;
+    border-radius: 0px !important;
+}
+  .rowDropDown option {
+    color: black;
+}
+  
+  
+  /*cells*/
+  td {
+    position: relative;
+    height: 10vh;
+    overflow: hidden;
+    border: none !important;
+}
+  .dataCell {
+    vertical-align: middle !important;
+    font-size: 1.5em;
+}
+#deleteAllButton {
+    margin-left: 85%;
+    margin-top: 3vh;
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+}
+  
+  /*delete button that appears when editing table*/
+  .deleteButtonContainer {
+    visibility: hidden;
+    opacity: 0;
+    margin-left: 2em;
+    margin-top: calc(7.5vh - 40px);
+    position: absolute;
+}
+  .deleteButton {
+    transform: scale(2.5);
+    cursor: pointer;
+    transition: color .25s;
+    color: gray;
+}
+  /*marking table rows for deletion*/
+  .marked {
+    color: #f79257;
+}
+
+  .tableImg {
+    max-width: 100%;
+    max-height: 100%;
+}
+  
+  #content {
+    margin-top: 100px;
+    font-size: 2em;
+    text-align: center;
+}
+
+  #tableContainer {
+    width: calc(100% - 375px);
+    margin-top: 120px;
+    z-index: 1;
+    position: relative;
+    float: right;
+}
+
+.marked {
+  color: #f79257;
+}
+  

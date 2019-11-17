@@ -10,9 +10,11 @@
   "scripts": {
     "buildLoginBundle": "babel ./client/login ./client/helper --presets react --out-file ./hosted/loginBundle.js",
     "buildAppBundle": "babel ./client/app ./client/helper --presets react --outfile ./hosted/bundle.js",
-    "build": "npm run buildLoginBundle && npm run buildAppBundle",
+    "buildSettingsBundle": "babel ./client/settings ./client/helper --presets react --outfile ./hosted/settingsBundle.js",
+    "build": "npm run buildLoginBundle && npm run buildAppBundle && npm run buildSettingsBundle",
     "watchLoginBundle": "babel --watch ./client/login ./client/helper --presets react --out-file ./hosted/loginBundle.js",
     "watchAppBundle": "babel --watch ./client/app ./client/helper --presets react --out-file ./hosted/bundle.js",
+    "watchSettingsBundle": "babel --watch ./client/settings ./client/helper --presets react --out-file ./hosted/settingsBundle.js",
     "nodemon": "nodemon --watch ./server ./server/app.js",
     "start": "node ./server/app.js",
     "pretest": "eslint ./server --fix",
@@ -44,6 +46,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
     "babel-cli": "^6.18.0",
     "babel-install": "2.1.0",
     "babel-preset-env": "^1.1.8",
