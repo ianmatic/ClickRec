@@ -5,6 +5,9 @@ const router = (app) => {
   // helper to get csrf
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
 
+  // preferences page
+  app.get('/preferences', mid.requiresSecure, mid.requiresLogin, controllers.Account.prefPage);
+
   // settings page
   app.get('/settings', mid.requiresSecure, mid.requiresLogin, controllers.Account.settingsPage);
   app.get('/getCredentials',

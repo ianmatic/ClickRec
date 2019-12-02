@@ -14,7 +14,6 @@ const mainPage = (req, res) => {
 
 // add a new media to the table
 const addMedia = (req, res) => {
-
   // use placeholder (empty) image if none is provided
   const imageURL = req.body.image === '' ? '/assets/img/default.png' : req.body.image;
 
@@ -58,7 +57,7 @@ const getMedia = (req, res) => {
   });
 };
 
-// remove a media element from the account 
+// remove a media element from the account
 const deleteMedia = (req, res) => {
   const rq = req;
   const rs = res;
