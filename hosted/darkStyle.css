@@ -80,6 +80,10 @@ tr {
     background-color: dimgray !important;
 }
 
+.emptyContent {
+    color: white;
+}
+
 
 
 /*Preferences and Settings*/
