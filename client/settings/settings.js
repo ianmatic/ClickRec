@@ -108,6 +108,7 @@ const ChangePasswordWindow = (props) => {
                     <input type="hidden" name="_csrf" value={props.csrf} />
                     <input className="startSubmit btn btn-outline-primary" type="submit" value="Change Password" />
                 </form>
+                <p id="successMessage"></p>
             </div>
         </div>
     );
@@ -123,7 +124,7 @@ const ChangeUsernameWindow = (props) => {
                 <h1 className="title">Update Your Username</h1>
                 <h2 className="subtitle">Enter the username you'd prefer to use</h2>
             </header>
-            {/*Error message and form*/}
+            {/*Error/Success message and form*/}
             <div className="window">
                 <p id="errorMessage"></p>
                 <form id="changeUsernameForm"
@@ -142,6 +143,7 @@ const ChangeUsernameWindow = (props) => {
                     <input type="hidden" name="_csrf" value={props.csrf} />
                     <input className="startSubmit btn btn-outline-primary" type="submit" value="Change Username" />
                 </form>
+                <p id="successMessage"></p>
             </div>
         </div>
     );
@@ -217,17 +219,18 @@ const createMainWindow = (csrf) => {
             $(btn).siblings().attr("type", "password");
         }
     });
+
+    // apply dark theme if enabled
+    sendAjax('GET', '/getPreferences', null, (result) => {
+        if (result.theme == "dark") {
+            $('head').append('<link rel="stylesheet" type="text/css" href="/assets/darkStyle.css">');
+        }
+    });
+
 };
 
-// display success message in settings
-const handleSuccess = (keyword) => {
-    const successDiv = `<p id="successMessage">Successfully updated your ${keyword}. <a href="" id="successLink">Click here</a> to go back to settings.</p>`
-    $(successDiv).insertAfter($("form"));
-    $("#errorMessage").empty();
-}
-
-// default to login window
 const setup = (csrf) => {
+    // first load credentials
     sendAjax('GET', '/getCredentials', null, (result) => {
         username = result.username;
         createMainWindow(csrf);

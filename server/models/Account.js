@@ -32,14 +32,39 @@ const AccountSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  wishListColor: {
+    type: String,
+    default: '#5C946F',
+  },
+  inProgressColor: {
+    type: String,
+    default: '#f79257',
+  },
+  completeColor: {
+    type: String,
+    default: '#AED9F4',
+  },
+  layout: {
+    type: String,
+    default: 'table',
+  },
+  theme: {
+    type: String,
+    default: 'light',
+  },
 });
 
 
-// each account returns an id and username
+// each account returns an id and username, and preferences
 AccountSchema.statics.toAPI = doc => ({
   // _id is built into mongo document and is guaranteed to be unique
   username: doc.username,
   _id: doc._id,
+  wishListColor: doc.wishListColor,
+  inProgressColor: doc.inProgressColor,
+  completeColor: doc.completeColor,
+  layout: doc.layout,
+  theme: doc.theme,
 });
 
 // check if password is valid

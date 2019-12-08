@@ -1,40 +1,68 @@
 "use strict";
 
 var csrf = void 0;
-var username = void 0;
-// Handles changing password
-var handlePasswordChange = function handlePasswordChange(e) {
+
+var wishListPicker = void 0;
+var inProgressPicker = void 0;
+var completePicker = void 0;
+
+var wishListSavedColor = void 0;
+var inProgressSavedColor = void 0;
+var completeSavedColor = void 0;
+
+var savedLayout = void 0;
+
+var savedTheme = void 0;
+
+// Handles changing colors
+var handleColorChange = function handleColorChange(e) {
     e.preventDefault();
 
-    // passwords don't match
-    if ($("#pass").val() !== $("#pass2").val()) {
-        handleError("Passwords do not match");
-        return false;
-    }
+    // get the 3 colors
+    var wishListColor = wishListPicker.getColor().toHEXA().toString(0);
+    var inProgressColor = inProgressPicker.getColor().toHEXA().toString(0);
+    var completeColor = completePicker.getColor().toHEXA().toString(0);
 
-    // change password
-    sendAjax('PUT', $("#changePasswordForm").attr("action"), $("#changePasswordForm").serialize(), function () {
-        handleSuccess("password");
+    // get the theme
+    var theme = $("#themeField").val();
+
+    // construct url
+    var url = "wishList=" + wishListColor + "&inProgress=" + inProgressColor + "&complete=" + completeColor + "&theme=" + theme + "&_csrf=" + csrf;
+
+    // change colors
+    sendAjax('PUT', $("#changeColorForm").attr("action"), url, function () {
+        handleSuccess("colors");
+
+        // reload theme
+        sendAjax('GET', '/getPreferences', null, function (result) {
+
+            // apply dark theme if enabled
+            if (result.theme == "dark") {
+                $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
+            } else {
+                $('link[title="darkTheme"]').remove();
+            }
+        });
+
         $("#successMessage").click(function (e) {
             e.preventDefault();
-            createMainWindow(csrf);
+            setup(csrf);
         });
     });
 
     return false;
 };
 
-// Handles updating username
-var handleUsernameChange = function handleUsernameChange(e) {
-    e.preventDefault("username");
-    // change username
-    sendAjax('PUT', $("#changeUsernameForm").attr("action"), $("#changeUsernameForm").serialize(), function (result) {
-        username = result.username;
-        handleSuccess("username");
+// Handles updating layout
+var handleLayoutChange = function handleLayoutChange(e) {
+    e.preventDefault();
+    // change layout
+    sendAjax('PUT', $("#changeLayoutForm").attr("action"), $("#changeLayoutForm").serialize(), function (result) {
+        handleSuccess("layout");
         $("#successMessage").click(function (e) {
             // setup success message link
             e.preventDefault();
-            createMainWindow(csrf);
+            setup(csrf);
         });
     });
 
@@ -59,13 +87,11 @@ var MainWindow = function MainWindow(props) {
                 React.createElement(
                     "h2",
                     { className: "subtitle" },
-                    "You are logged in as ",
-                    username,
-                    ". ",
+                    "Change colors and the layout here. ",
                     React.createElement(
                         "a",
-                        { id: "logoutLink", href: "/logout" },
-                        "Log out"
+                        { id: "homeLink", href: "/" },
+                        "Home"
                     ),
                     "."
                 )
@@ -76,16 +102,97 @@ var MainWindow = function MainWindow(props) {
                 React.createElement(
                     "h5",
                     { id: "windowTitle" },
-                    "Colors"
+                    "Preferences"
                 ),
-                React.createElement("button", { className: "jscolor {value:'66ccff'}" })
+                React.createElement(
+                    "div",
+                    { className: "preferenceWrapper", id: "colorsInfo" },
+                    React.createElement(
+                        "p",
+                        { className: "preferenceTitle" },
+                        "Colors:"
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "colorsContainer" },
+                        React.createElement(
+                            "div",
+                            { className: "colorWrapper" },
+                            React.createElement(
+                                "p",
+                                { className: "colorTitle" },
+                                "Wish List"
+                            ),
+                            React.createElement("div", { id: "wishListPreview", className: "colorPreview wishList" })
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "colorWrapper" },
+                            React.createElement(
+                                "p",
+                                { className: "colorTitle" },
+                                "In Progress"
+                            ),
+                            React.createElement("div", { id: "inProgressPreview", className: "colorPreview inProgress" })
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "colorWrapper" },
+                            React.createElement(
+                                "p",
+                                { className: "colorTitle" },
+                                "Complete"
+                            ),
+                            React.createElement("div", { id: "completePreview", className: "colorPreview complete" })
+                        )
+                    ),
+                    React.createElement(
+                        "p",
+                        { id: "themeText" },
+                        savedTheme + " theme"
+                    ),
+                    React.createElement(
+                        "a",
+                        { href: "", id: "changeColorsLink" },
+                        "Change Colors"
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "preferenceWrapper", id: "layoutInfo" },
+                    React.createElement(
+                        "p",
+                        { className: "preferenceTitle" },
+                        "Layout:"
+                    ),
+                    React.createElement(
+                        "p",
+                        { id: "layoutText" },
+                        "" + savedLayout
+                    ),
+                    React.createElement(
+                        "a",
+                        { href: "", id: "changeLayoutLink" },
+                        "Change Layout"
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { id: "mainPreviewPage" },
+                    React.createElement(
+                        "label",
+                        { "for": "targetFrame" },
+                        "Preview:"
+                    ),
+                    React.createElement("iframe", { className: "preview", id: "mainPreview", src: "main.html", tabindex: "-1", name: "targetframe", allowTransparency: "true", scrolling: "no", frameborder: "0" })
+                )
             )
         )
     );
 };
 
-// Change Password Page
-var ChangePasswordWindow = function ChangePasswordWindow(props) {
+// change colors window with form
+var ChangeColorsWindow = function ChangeColorsWindow(props) {
     return (
         // below top header
         React.createElement(
@@ -97,12 +204,12 @@ var ChangePasswordWindow = function ChangePasswordWindow(props) {
                 React.createElement(
                     "h1",
                     { className: "title" },
-                    "Update Your Password"
+                    "Change Your Colors"
                 ),
                 React.createElement(
                     "h2",
                     { className: "subtitle" },
-                    "Enter the password you'd prefer to use"
+                    "Pick and choose the colors you'd prefer to use"
                 )
             ),
             React.createElement(
@@ -111,64 +218,88 @@ var ChangePasswordWindow = function ChangePasswordWindow(props) {
                 React.createElement("p", { id: "errorMessage" }),
                 React.createElement(
                     "form",
-                    { id: "changePasswordForm",
-                        name: "changePasswordForm",
-                        onSubmit: handlePasswordChange,
-                        action: "/changePassword",
+                    { id: "changeColorForm",
+                        name: "changeColorForm",
+                        onSubmit: handleColorChange,
+                        action: "/changeColors",
                         method: "PUT",
                         className: "startForm"
                     },
                     React.createElement(
                         "div",
-                        { className: "inputWrapper" },
+                        { id: "colorPreviewPage" },
                         React.createElement(
-                            "label",
-                            { htmlFor: "pass" },
-                            "New Password"
+                            "p",
+                            null,
+                            "Preview"
                         ),
-                        React.createElement("br", null),
-                        React.createElement(
-                            "div",
-                            { className: "passwordWrapper" },
-                            React.createElement("input", { id: "pass", type: "password", name: "pass", placeholder: "Choose Password", required: true }),
-                            React.createElement(
-                                "button",
-                                { type: "button", className: "btn btn-primary showButton", tabIndex: "-1" },
-                                "Show"
-                            )
-                        ),
-                        React.createElement("br", null)
+                        React.createElement("iframe", { className: "preview", src: "main.html", tabindex: "-1", name: "targetframe", allowTransparency: "true", scrolling: "no", frameborder: "0" })
                     ),
                     React.createElement(
                         "div",
                         { className: "inputWrapper" },
                         React.createElement(
                             "label",
-                            { htmlFor: "pass2" },
-                            "Confirm New Password"
+                            { htmlFor: "wishlist" },
+                            "Wishlist "
+                        ),
+                        React.createElement("input", { id: "wishlistColor", type: "button", className: "wishListPickr", name: "wishlist" })
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "inputWrapper" },
+                        React.createElement(
+                            "label",
+                            { htmlFor: "inProgress" },
+                            "In Progress "
+                        ),
+                        React.createElement("input", { id: "inProgressColor", type: "button", className: "inProgressPickr", name: "inProgress" })
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "inputWrapper" },
+                        React.createElement(
+                            "label",
+                            { htmlFor: "complete" },
+                            "Complete "
+                        ),
+                        React.createElement("input", { id: "completeColor", type: "button", className: "completePickr", name: "complete" })
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "inputWrapper" },
+                        React.createElement(
+                            "label",
+                            { htmlFor: "theme" },
+                            "Theme"
                         ),
                         React.createElement("br", null),
                         React.createElement(
-                            "div",
-                            { className: "passwordWrapper" },
-                            React.createElement("input", { id: "pass2", type: "password", name: "pass2", placeholder: "Retype Password", required: true }),
+                            "select",
+                            { className: "custom-select", id: "themeField", name: "theme", required: true },
                             React.createElement(
-                                "button",
-                                { type: "button", className: "btn btn-primary showButton", tabIndex: "-1" },
-                                "Show"
+                                "option",
+                                { value: "light" },
+                                "Light"
+                            ),
+                            React.createElement(
+                                "option",
+                                { value: "dark" },
+                                "Dark"
                             )
                         )
                     ),
                     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Change Password" })
-                )
+                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Save Colors" })
+                ),
+                React.createElement("p", { id: "successMessage" })
             )
         )
     );
 };
 
-// change username window with form
-var ChangeUsernameWindow = function ChangeUsernameWindow(props) {
+// Change Layout Page
+var ChangeLayoutWindow = function ChangeLayoutWindow(props) {
     return (
         // below top header
         React.createElement(
@@ -180,12 +311,12 @@ var ChangeUsernameWindow = function ChangeUsernameWindow(props) {
                 React.createElement(
                     "h1",
                     { className: "title" },
-                    "Update Your Username"
+                    "Update Your Layout"
                 ),
                 React.createElement(
                     "h2",
                     { className: "subtitle" },
-                    "Enter the username you'd prefer to use"
+                    "Select the layout you'd prefer to use"
                 )
             ),
             React.createElement(
@@ -194,74 +325,212 @@ var ChangeUsernameWindow = function ChangeUsernameWindow(props) {
                 React.createElement("p", { id: "errorMessage" }),
                 React.createElement(
                     "form",
-                    { id: "changeUsernameForm",
-                        name: "changeUsernameForm",
-                        onSubmit: handleUsernameChange,
-                        action: "/changeUsername",
+                    { id: "changeLayoutForm",
+                        name: "changeLayoutForm",
+                        onSubmit: handleLayoutChange,
+                        action: "/changeLayout",
                         method: "PUT",
                         className: "startForm"
                     },
                     React.createElement(
                         "div",
+                        { id: "layoutPreviewPage" },
+                        React.createElement(
+                            "p",
+                            null,
+                            "Preview"
+                        ),
+                        React.createElement("iframe", { className: "preview", src: "main.html", tabindex: "-1", name: "targetframe", allowTransparency: "true", scrolling: "no", frameborder: "0" })
+                    ),
+                    React.createElement(
+                        "div",
                         { className: "inputWrapper" },
                         React.createElement(
                             "label",
-                            { htmlFor: "username" },
-                            "New Username"
+                            { htmlFor: "layout" },
+                            "Layout"
                         ),
                         React.createElement("br", null),
-                        React.createElement("input", { id: "user", type: "text", name: "username", placeholder: "Choose Username", required: true })
+                        React.createElement(
+                            "select",
+                            { className: "custom-select", id: "layoutField", name: "layout", required: true },
+                            React.createElement(
+                                "option",
+                                { value: "table" },
+                                "Table"
+                            ),
+                            React.createElement(
+                                "option",
+                                { value: "grid" },
+                                "Grid"
+                            )
+                        )
                     ),
                     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Change Username" })
-                )
+                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Save Layout" })
+                ),
+                React.createElement("p", { id: "successMessage" })
             )
         )
     );
 };
 
 // render a new change password window
-var createChangePasswordWindow = function createChangePasswordWindow(csrf) {
-    ReactDOM.render(React.createElement(ChangePasswordWindow, { csrf: csrf }), document.querySelector("#settingsContent"));
+var createChangeColorWindow = function createChangeColorWindow(csrf) {
+    ReactDOM.render(React.createElement(ChangeColorsWindow, { csrf: csrf }), document.querySelector("#preferencesContent"));
 
-    // setup show password buttons
-    var showButtons = $(".showButton");
-    showButtons.click(function (e) {
-        var btn = e.target;
-        // hide password
-        if (btn.innerText == "Show") {
-            btn.innerText = "Hide";
-            $(btn).siblings().attr("type", "text");
-        }
-        // show Password
-        else {
-                btn.innerText = "Show";
-                $(btn).siblings().attr("type", "password");
+    // setup color pickers
+    // wishlist
+    wishListPicker = Pickr.create({
+        el: '.wishListPickr',
+        theme: 'nano',
+
+        swatches: null,
+        comparison: false,
+
+        default: wishListSavedColor,
+
+        components: {
+
+            // Main components
+            preview: true,
+            hue: true,
+
+            // Input / output Options
+            interaction: {
+                input: true,
+                hex: true,
+                rgba: true
             }
+        }
+    }).on('change', function (color) {
+        $("iframe").contents().find(".wishList").attr('style', 'background-color: ' + color.toHEXA().toString(0) + " !important");
+    });
+    // in progress
+    inProgressPicker = Pickr.create({
+        el: '.inProgressPickr',
+        theme: 'nano',
+
+        swatches: null,
+        comparison: false,
+
+        default: inProgressSavedColor,
+
+        components: {
+
+            // Main components
+            preview: true,
+            hue: true,
+
+            // Input / output Options
+            interaction: {
+                input: true,
+                hex: true,
+                rgba: true
+            }
+        }
+    }).on('change', function (color) {
+        $("iframe").contents().find(".inProgress").attr('style', 'background-color: ' + color.toHEXA().toString(0) + " !important");
+    });
+    // complete
+    completePicker = Pickr.create({
+        el: '.completePickr',
+        theme: 'nano',
+
+        swatches: null,
+        comparison: false,
+
+        default: completeSavedColor,
+
+        components: {
+
+            // Main components
+            preview: true,
+            hue: true,
+
+            // Input / output Options
+            interaction: {
+                input: true,
+                hex: true,
+                rgba: true
+            }
+        }
+    }).on('change', function (color) {
+        $("iframe").contents().find(".complete").attr('style', 'background-color: ' + color.toHEXA().toString(0) + " !important");
+    });
+
+    // setup theme select
+    // update select to loaded value
+    $("#themeField option[value=" + savedTheme).prop('selected', 'selected');
+
+    // update preview on change
+    $('#themeField').on('change', function (e) {
+        document.querySelector('iframe').contentWindow.loadContentFromServer(savedLayout, this.value);
     });
 };
 
-// render a new change username window
-var createChangeUsernameWindow = function createChangeUsernameWindow(csrf) {
-    ReactDOM.render(React.createElement(ChangeUsernameWindow, { csrf: csrf }), document.querySelector("#settingsContent"));
+// render a new change layout window
+var createChangeLayoutWindow = function createChangeLayoutWindow(csrf) {
+    ReactDOM.render(React.createElement(ChangeLayoutWindow, { csrf: csrf }), document.querySelector("#preferencesContent"));
+
+    // update select to loaded value
+    $("#layoutField option[value=" + savedLayout).prop('selected', 'selected');
+
+    // update preview on change
+    $('#layoutField').on('change', function (e) {
+        document.querySelector('iframe').contentWindow.loadContentFromServer(this.value, savedTheme);
+    });
 };
 
 // render a new main window
 var createMainWindow = function createMainWindow(csrf) {
-    ReactDOM.render(React.createElement(MainWindow, null), document.querySelector("#settingsContent"));
+    ReactDOM.render(React.createElement(MainWindow, null), document.querySelector("#preferencesContent"));
+
+    // setup changeColors link
+    var changeColorsLink = document.querySelector("#changeColorsLink");
+    changeColorsLink.onclick = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        createChangeColorWindow(csrf);
+        return false;
+    };
+
+    // setup changeLayout link
+    var changeLayoutLink = document.querySelector("#changeLayoutLink");
+    changeLayoutLink.onclick = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        createChangeLayoutWindow(csrf);
+        return false;
+    };
 };
 
-// display success message in settings
-var handleSuccess = function handleSuccess(keyword) {
-    var successDiv = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to settings.</p>";
-    $(successDiv).insertAfter($("form"));
-    $("#errorMessage").empty();
-};
-
-// default to login window
+// default to start window
 var setup = function setup(csrf) {
-    sendAjax('GET', '/getCredentials', null, function (result) {
-        username = result.username;
+    createMainWindow(csrf);
+    sendAjax('GET', '/getPreferences', null, function (result) {
+
+        // get the saved colors
+        wishListSavedColor = result.wishListColor;
+        inProgressSavedColor = result.inProgressColor;
+        completeSavedColor = result.completeColor;
+
+        // update css rule
+        var sheet = window.document.styleSheets[0];
+        sheet.addRule('.wishList', 'background-color: ' + wishListSavedColor + " !important;");
+        sheet.addRule('.inProgress', 'background-color: ' + inProgressSavedColor + " !important;");
+        sheet.addRule('.complete', 'background-color: ' + completeSavedColor + " !important;");
+
+        savedLayout = result.layout;
+        savedTheme = result.theme;
+
+        // apply dark theme if enabled
+        if (savedTheme == "dark") {
+            $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
+        } else {
+            $('link[title="darkTheme"]').remove();
+        }
+
         createMainWindow(csrf);
     });
 };
@@ -282,6 +551,12 @@ $(document).ready(function () {
 var handleError = function handleError(message) {
     $("#errorMessage").text(message);
     $("#successMessage").empty();
+};
+
+// display success message in settings
+var handleSuccess = function handleSuccess(keyword) {
+    document.querySelector("#successMessage").innerHTML = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to preferences.</p>";
+    $("#errorMessage").empty();
 };
 
 // redirect to different page

@@ -155,7 +155,11 @@ const changeUsername = (req, res) => {
 
     const updatePromise = Account.AccountModel.update({ _id: rq.session.account._id },
       { $set: { username: rq.body.username } });
-    updatePromise.then(() => rs.json({ username: rq.body.username }));
+    updatePromise.then(() => {
+      // update current
+      rq.session.account.username = rq.body.username;
+      rs.json({ username: rq.body.username });
+    });
     updatePromise.catch((err) => {
       console.log(err);
 
@@ -174,12 +178,78 @@ const changePassword = (req, res) => {
   return Account.AccountModel.generateHash(rq.body.pass, (salt, hash) => {
     const updatePromise = Account.AccountModel.update({ _id: rq.session.account._id },
       { $set: { password: hash, salt } });
-    updatePromise.then(() => rs.json({ username: '/settings' }));
+    updatePromise.then(() => {
+      rs.json({ username: '/settings' });
+    });
     updatePromise.catch((err) => {
       console.log(err);
 
       return rs.status(400).json({ error: 'An error occurred' });
     });
+  });
+};
+
+// get preferences
+const getPreferences = (req, res) => {
+  const rq = req;
+  const rs = res;
+  console.log(`account: ${rq.session.account.theme}`);
+  const preferences = {
+    wishListColor: rq.session.account.wishListColor,
+    inProgressColor: rq.session.account.inProgressColor,
+    completeColor: rq.session.account.completeColor,
+    layout: rq.session.account.layout,
+    theme: rq.session.account.theme,
+  };
+  return rs.json(preferences);
+};
+
+// change colors
+const changeColors = (req, res) => {
+  const rq = req;
+  const rs = res;
+
+  // update colors
+  const updatePromise = Account.AccountModel.update({ _id: rq.session.account._id },
+    {
+      $set: {
+        wishListColor: rq.body.wishList,
+        inProgressColor: rq.body.inProgress,
+        completeColor: rq.body.complete,
+        theme: rq.body.theme,
+      },
+    });
+  updatePromise.then(() => {
+    // update current
+    rq.session.account.wishListColor = rq.body.wishList;
+    rq.session.account.inProgressColor = rq.body.inProgress;
+    rq.session.account.completeColor = rq.body.complete;
+    rq.session.account.theme = rq.body.theme;
+    rs.json({ colors: '/preferences' });
+  });
+  updatePromise.catch((err) => {
+    console.log(err);
+
+    return rs.status(400).json({ error: 'An error occurred' });
+  });
+};
+
+// change layout
+const changeLayout = (req, res) => {
+  const rq = req;
+  const rs = res;
+
+  // update layout
+  const updatePromise = Account.AccountModel.update({ _id: rq.session.account._id },
+    { $set: { layout: rq.body.layout } });
+  updatePromise.then(() => {
+    // update current
+    rq.session.account.layout = rq.body.layout;
+    rs.json({ layout: '/preferences' });
+  });
+  updatePromise.catch((err) => {
+    console.log(err);
+    return rs.status(400).json({ error: 'An error occurred' });
   });
 };
 
@@ -193,3 +263,6 @@ module.exports.getToken = getToken;
 module.exports.getCredentials = getCredentials;
 module.exports.changePassword = changePassword;
 module.exports.changeUsername = changeUsername;
+module.exports.changeColors = changeColors;
+module.exports.changeLayout = changeLayout;
+module.exports.getPreferences = getPreferences;

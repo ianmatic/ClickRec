@@ -1,116 +1,184 @@
 "use strict";
 
-// enable clicking on headers to sort
-$("#statusHeader").click(function () {
-    sortContent(0);
-});
-$("#nameHeader").click(function () {
-    sortContent(1);
-});
-$("#typeHeader").click(function () {
-    sortContent(2);
-});
-$("#notesHeader").click(function () {
-    sortContent(3);
-});
-$("#imageHeader").click(function () {
-    sortContent(4);
-});
+var layout = void 0;
+var theme = void 0;
 
-// stop propagation to allow multi-level select
-$('.dropdown-menu option, .dropdown-menu select').click(function (e) {
-    e.stopPropagation();
-});
+// used in all layouts
+function setupControlListeners() {
+    // stop propagation to allow multi-level select
+    $('.dropdown-menu option, .dropdown-menu select').click(function (e) {
+        e.stopPropagation();
+    });
 
-// match filter color with selection
-$("#statusFilter, #typeFilter").change(function () {
-    var select = $("#statusFilter");
-    select.css("background-color", select.find(":selected").css("background-color"));
+    // match filter color with selection
+    $("#statusFilter, #typeFilter").change(function () {
+        var select = $("#statusFilter");
+        select.css("background-color", select.find(":selected").css("background-color"));
 
-    filterRows($("#typeFilter").val(), $("#statusFilter").val());
-});
+        filterContent($("#typeFilter").val(), $("#statusFilter").val());
+    });
 
-// delete all button
-$("#deleteAllButton").click(function () {
-    // select all
-    var buttons = document.querySelectorAll(".deleteButton");
-
-    // hasn't changed any icons yet
-    var madeSelection = false;
-    for (var i = 0; i < buttons.length; i++) {
-        // mark all as selected
-        if (!buttons[i].className.includes("marked")) {
-            buttons[i].className += " marked";
-
-            // made a selection
-            madeSelection = true;
-        }
-    }
-
-    // didn't change any icons, so deselect all
-    if (!madeSelection) {
-        for (var _i = 0; _i < buttons.length; _i++) {
-            if (buttons[_i].className.includes("marked")) {
-                buttons[_i].classList.remove("marked");
+    $(".deleteButtonContainer").click(function (e) {
+        var button = e.target;
+        // unmark row
+        if (button.className.includes("marked")) {
+            button.classList.remove("marked");
+        } // mark row
+        else {
+                button.className += " marked";
             }
-        }
-    }
-});
+    });
 
-// search whenever values change
-$("#searchInput").on('input change keyup paste', function () {
+    // search whenever values change
+    $("#searchInput").on('input change keyup paste', function () {
 
-    var inputValue = $("#searchInput").val().toLowerCase();
-    inputValue = inputValue.replace(/ +/g, ""); // take out spaces
+        var inputValue = $("#searchInput").val().toLowerCase();
+        inputValue = inputValue.replace(/ +/g, ""); // take out spaces
 
-    var rows = $(".mediaRow");
-    // empty so display all
-    if (inputValue.length == 0) {
-        rows.css("display", "table-row");
-    } else {
-        // otherwise filter
-
-        // check all rows
-        for (var i = 0; i < rows.length; i++) {
-
-            // get name type and notes
-            var textContent = rows[i].querySelector(".contentName").innerText + rows[i].querySelector(".contentType").innerText + rows[i].querySelector(".contentNotes").innerText;
-            textContent = textContent.replace(/ +/g, "");
-            textContent = textContent.toLowerCase();
-
-            // match, so display it
-            if (textContent.includes(inputValue)) {
-                rows[i].style.display = "table-row";
+        if (layout == "table") {
+            var rows = $(".mediaRow");
+            // empty so display all
+            if (inputValue.length == 0) {
+                rows.css("display", "table-row");
             } else {
-                // no match, so hide
-                rows[i].style.display = "none";
+                // otherwise filter
+
+                // check all rows
+                for (var i = 0; i < rows.length; i++) {
+
+                    // get name type and notes
+                    var textContent = rows[i].querySelector(".contentName").innerText + rows[i].querySelector(".contentType").innerText + rows[i].querySelector(".contentNotes").innerText;
+                    textContent = textContent.replace(/ +/g, "");
+                    textContent = textContent.toLowerCase();
+
+                    // match, so display it
+                    if (textContent.includes(inputValue)) {
+                        rows[i].style.display = "table-row";
+                    } else {
+                        // no match, so hide
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        } else if (layout == "grid") {
+            var gridItems = $(".gridItemWrapper");
+            // empty so display all
+            if (inputValue.length == 0) {
+                gridItems.css("display", "block");
+            } else {
+                // otherwise filter
+
+                // check all items
+                for (var _i = 0; _i < gridItems.length; _i++) {
+
+                    // get name type and notes
+                    var _textContent = gridItems[_i].querySelector(".gridItemName").innerText + gridItems[_i].querySelector(".gridItemType").innerText + gridItems[_i].querySelector(".gridItemNotes").innerText;
+                    _textContent = _textContent.replace(/ +/g, "");
+                    _textContent = _textContent.toLowerCase();
+
+                    // match, so display it
+                    if (_textContent.includes(inputValue)) {
+                        gridItems[_i].style.display = "block";
+                    } else {
+                        // no match, so hide
+                        gridItems[_i].style.display = "none";
+                    }
+                }
             }
         }
-    }
-});
+    });
+}
 
-// filter the displayed rows based on type and status
-var filterRows = function filterRows(type, status) {
+// only call when using table
+function setupTableListeners() {
+    // enable clicking on headers to sort
+    $("#statusHeader").click(function () {
+        sortContent(0);
+    });
+    $("#nameHeader").click(function () {
+        sortContent(1);
+    });
+    $("#typeHeader").click(function () {
+        sortContent(2);
+    });
+    $("#notesHeader").click(function () {
+        sortContent(3);
+    });
+    $("#imageHeader").click(function () {
+        sortContent(4);
+    });
+
+    // delete all button
+    $("#deleteAllButton").click(function () {
+        // select all
+        var buttons = document.querySelectorAll(".deleteButton");
+
+        // hasn't changed any icons yet
+        var madeSelection = false;
+        for (var i = 0; i < buttons.length; i++) {
+            // mark all as selected
+            if (!buttons[i].className.includes("marked")) {
+                buttons[i].className += " marked";
+
+                // made a selection
+                madeSelection = true;
+            }
+        }
+
+        // didn't change any icons, so deselect all
+        if (!madeSelection) {
+            for (var _i2 = 0; _i2 < buttons.length; _i2++) {
+                if (buttons[_i2].className.includes("marked")) {
+                    buttons[_i2].classList.remove("marked");
+                }
+            }
+        }
+    });
+}
+
+// filter the displayed content based on type and status
+var filterContent = function filterContent(type, status) {
 
     type = type.toLowerCase();
     status = status.toLowerCase();
-    var tableBody = document.querySelector("#target");
-    for (var i = 0; i < tableBody.rows.length; i++) {
-        var rowType = tableBody.rows[i].querySelector(".contentType").getAttribute("data-serverData").trim().toLowerCase();
-        var rowStatus = tableBody.rows[i].querySelector(".statusColumn").getAttribute("data-serverData").trim().toLowerCase();
-        // all visible
-        if (type == "all" && status == "all") {
-            tableBody.rows[i].style.display = "table-row";
-        } // enable rows of type with corresponding status
-        else if (rowType === type && (rowStatus === status || status == "all")) {
+    if (layout == "table") {
+        var tableBody = document.querySelector("#target");
+        for (var i = 0; i < tableBody.rows.length; i++) {
+            var rowType = tableBody.rows[i].querySelector(".contentType").getAttribute("data-serverData").trim().toLowerCase();
+            var rowStatus = tableBody.rows[i].querySelector(".statusColumn").getAttribute("data-serverData").trim().toLowerCase();
+            // all visible
+            if (type == "all" && status == "all") {
                 tableBody.rows[i].style.display = "table-row";
-            } // enable rows of status with corresponding type
-            else if (rowStatus === status && (rowType === type || type == "all")) {
+            } // enable content of type with corresponding status
+            else if (rowType === type && (rowStatus === status || status == "all")) {
                     tableBody.rows[i].style.display = "table-row";
-                } // don't show
-                else {
-                        tableBody.rows[i].style.display = "none";
-                    }
+                } // enable content of status with corresponding type
+                else if (rowStatus === status && (rowType === type || type == "all")) {
+                        tableBody.rows[i].style.display = "table-row";
+                    } // don't show
+                    else {
+                            tableBody.rows[i].style.display = "none";
+                        }
+        }
+    } else if (layout == "grid") {
+        var gridItems = $(".gridItemWrapper");
+        for (var _i3 = 0; _i3 < gridItems.length; _i3++) {
+            var gridType = gridItems[_i3].querySelector(".gridItemType").getAttribute("data-serverData").trim().toLowerCase();
+            var gridStatus = gridItems[_i3].querySelector(".gridStatus").getAttribute("data-serverData").trim().toLowerCase();
+            // all visible
+            if (type == "all" && status == "all") {
+                gridItems[_i3].style.display = "block";
+            } // enable content of type with corresponding status
+            else if (gridType === type && (gridStatus === status || status == "all")) {
+                    gridItems[_i3].style.display = "block";
+                } // enable contentf of status with corresponding type
+                else if (gridStatus === status && (gridType === type || type == "all")) {
+                        gridItems[_i3].style.display = "block";
+                    } // don't show
+                    else {
+                            gridItems[_i3].style.display = "none";
+                        }
+        }
     }
 };
 
@@ -121,7 +189,7 @@ var addMedia = function addMedia(e) {
     // don't allow adding if editing
     if (!document.querySelector("#addSubmitButton").className.includes("btn-secondary")) {
         sendAjax('POST', $("#addForm").attr("action"), $("#addForm").serialize(), function () {
-            loadContentFromServer();
+            loadContentFromServer(layout, theme);
         });
     } else {
         alert("Please save your changes before adding more media");
@@ -132,11 +200,11 @@ var addMedia = function addMedia(e) {
 
 // helper variables for deleting media
 var csrfToken = void 0;
-var deleteMedia = function deleteMedia(row) {
+var deleteMedia = function deleteMedia(item) {
     // get the id of the media to be deleted
-    var selectedMedia = "uniqueid=" + row.getAttribute("data-id") + "&_csrf=" + csrfToken;
-    $(row).remove();
-    row = "";
+    var selectedMedia = "uniqueid=" + item.getAttribute("data-id") + "&_csrf=" + csrfToken;
+    $(item).remove();
+    item = "";
     sendAjax('DELETE', "/main", selectedMedia, function () {});
 };
 
@@ -157,7 +225,11 @@ var editMedia = function editMedia(e) {
     $(".deleteButtonContainer, #deleteAllButton").css("opacity", "1");
 
     // enable editing
-    $(".mediaRow").attr("contenteditable", true);
+    if (layout == "table") {
+        $(".mediaRow").attr("contenteditable", true);
+    } else if (layout == "grid") {
+        $(".gridItemWrapper").attr("contenteditable", true);
+    }
 };
 // save changes made to table
 var saveMedia = function saveMedia(e) {
@@ -171,36 +243,70 @@ var saveMedia = function saveMedia(e) {
     $("#addSubmitButton").toggleClass("btn-secondary");
     $("#addSubmitButton").toggleClass("btn-outline-primary");
 
-    // disable editing
-    var rowItems = $(".mediaRow");
-    rowItems.attr("contenteditable", false);
+    var items = [];
+    if (layout == "table") {
+        // disable editing
+        var rowItems = $(".mediaRow");
+        rowItems.attr("contenteditable", false);
 
-    // delete rows
-    for (var i = 0; i < rowItems.length; i++) {
-        if (rowItems[i].querySelector(".deleteButton").className.includes("marked")) {
-            deleteMedia(rowItems[i]);
+        // delete rows
+        for (var i = 0; i < rowItems.length; i++) {
+            if (rowItems[i].querySelector(".deleteButton").className.includes("marked")) {
+                deleteMedia(rowItems[i]);
+            }
+        }
+
+        // build array full of new items
+        for (var _i4 = 0; _i4 < rowItems.length; _i4++) {
+            var dataObj = {};
+            dataObj.name = rowItems.find(".contentName")[_i4].innerText;
+            dataObj.type = rowItems.find(".contentType")[_i4].innerText;
+            dataObj.status = rowItems.find(".dropdown-menu")[_i4].getAttribute("value");
+            dataObj.notes = rowItems.find(".contentNotes")[_i4].innerText;
+            dataObj.image = rowItems.find("img")[_i4].getAttribute("src");
+            dataObj.id = rowItems[_i4].getAttribute("data-id");
+            items.push(dataObj);
+        }
+    } else if (layout == "grid") {
+
+        // disable editing
+        var gridItems = $(".gridItemWrapper");
+        gridItems.attr("contenteditable", false);
+
+        // delete rows
+        for (var _i5 = 0; _i5 < gridItems.length; _i5++) {
+            if (gridItems[_i5].querySelector(".deleteButton").className.includes("marked")) {
+                deleteMedia(gridItems[_i5]);
+            }
+        }
+
+        // build array full of new items
+        for (var _i6 = 0; _i6 < gridItems.length; _i6++) {
+            var _dataObj = {};
+            _dataObj.name = gridItems.find(".gridItemName")[_i6].innerText;
+            _dataObj.type = gridItems.find(".gridItemType")[_i6].innerText;
+            _dataObj.status = gridItems.find(".dropdown-menu")[_i6].getAttribute("value");
+            _dataObj.notes = gridItems.find(".gridItemNotes")[_i6].innerText;
+            _dataObj.image = gridItems.find(".gridContentImage")[_i6].getAttribute("src");
+            _dataObj.id = gridItems[_i6].getAttribute("data-id");
+            items.push(_dataObj);
         }
     }
 
-    // build array full of new items
-    var items = [];
-    for (var _i2 = 0; _i2 < rowItems.length; _i2++) {
-        var dataObj = {};
-        dataObj.name = rowItems.find(".contentName")[_i2].innerText;
-        dataObj.type = rowItems.find(".contentType")[_i2].innerText;
-        dataObj.status = rowItems.find(".dropdown-menu")[_i2].getAttribute("value");
-        dataObj.notes = rowItems.find(".contentNotes")[_i2].innerText;
-        dataObj.image = rowItems.find("img")[_i2].getAttribute("src");
-        dataObj.id = rowItems[_i2].getAttribute("data-id");
-        items.push(dataObj);
-    }
-
     // send ajax for all items to update them
-    for (var _i3 = 0; _i3 < items.length; _i3++) {
-        var data = "name=" + items[_i3].name + ("&type=" + items[_i3].type) + ("&notes=" + items[_i3].notes) + ("&image=" + items[_i3].image) + ("&status=" + items[_i3].status) + ("&uniqueid=" + items[_i3].id) + ("&_csrf=" + csrfToken);
+
+    var _loop = function _loop(_i7) {
+        var data = "name=" + items[_i7].name + ("&type=" + items[_i7].type) + ("&notes=" + items[_i7].notes) + ("&image=" + items[_i7].image) + ("&status=" + items[_i7].status) + ("&uniqueid=" + items[_i7].id) + ("&_csrf=" + csrfToken);
         sendAjax('PUT', '/main', data, function () {
-            loadContentFromServer();
+            // only load on last one
+            if (_i7 == items.length - 1) {
+                loadContentFromServer(layout, theme);
+            }
         }); // update on server
+    };
+
+    for (var _i7 = 0; _i7 < items.length; _i7++) {
+        _loop(_i7);
     }
 
     // hide delete buttons
@@ -432,14 +538,66 @@ var Controls = function Controls(props) {
     );
 };
 
-// build table
+// build table framework
+var TableFrame = function TableFrame(props) {
+    return React.createElement(
+        "div",
+        null,
+        React.createElement(
+            "button",
+            { className: "btn btn-outline-primary", id: "deleteAllButton", type: "button" },
+            "Select All"
+        ),
+        React.createElement(
+            "table",
+            { className: "table table-striped", id: "contentTable" },
+            React.createElement(
+                "colgroup",
+                null,
+                React.createElement("col", { width: "5.5%" }),
+                React.createElement("col", { width: "23.75%" }),
+                React.createElement("col", { width: "23.75%" }),
+                React.createElement("col", { width: "23.75%" }),
+                React.createElement("col", { width: "23.75%" })
+            ),
+            React.createElement(
+                "thead",
+                null,
+                React.createElement(
+                    "tr",
+                    null,
+                    React.createElement("th", { className: "tableHeader", id: "statusHeader" }),
+                    React.createElement(
+                        "th",
+                        { className: "tableHeader", id: "nameHeader" },
+                        "Name"
+                    ),
+                    React.createElement(
+                        "th",
+                        { className: "tableHeader", id: "typeHeader" },
+                        "Type"
+                    ),
+                    React.createElement(
+                        "th",
+                        { className: "tableHeader", id: "notesHeader" },
+                        "Notes"
+                    ),
+                    React.createElement(
+                        "th",
+                        { className: "tableHeader", id: "imageHeader" },
+                        "Image"
+                    )
+                )
+            ),
+            React.createElement("tbody", { id: "target" })
+        )
+    );
+};
+
+// build  grid
+
+// build table contents
 var ContentTable = function ContentTable(props) {
-    // empty table
-    if (props.contentTable.length === 0) {
-        $(".emptyContent").css("display", "block");
-        return React.createElement("div", { id: "target" });
-    }
-    $(".emptyContent").css("display", "none");
 
     // build rows filled with cells
     var contentNodes = props.contentTable.map(function (content) {
@@ -447,7 +605,7 @@ var ContentTable = function ContentTable(props) {
             // Row
             React.createElement(
                 "tr",
-                { key: content._id, "data-id": content._id, className: "mediaRow" },
+                { "data-id": content._id, className: "mediaRow" },
                 React.createElement(
                     "td",
                     { className: "statusColumn " + content.status, "data-serverdata": "" + content.status },
@@ -485,7 +643,6 @@ var ContentTable = function ContentTable(props) {
                 React.createElement(
                     "td",
                     { "data-serverdata": "" + content.type, className: "dataCell contentType" },
-                    " ",
                     content.type
                 ),
                 React.createElement(
@@ -517,6 +674,76 @@ var ContentTable = function ContentTable(props) {
     );
 };
 
+// build grid contents
+var ContentGrid = function ContentGrid(props) {
+    var contentNodes = props.contentGrid.map(function (content) {
+        return React.createElement(
+            "div",
+            { className: "gridItemWrapper", "data-id": content._id },
+            React.createElement(
+                "div",
+                { "data-serverdata": "" + content.status, className: "gridStatus " + content.status },
+                React.createElement(
+                    "div",
+                    { className: "rowDropDownWrapper gridDropDownWrapper dropdown" },
+                    React.createElement("button", { className: "rowDropDown btn btn-secondary dropdown-toggle " + content.status,
+                        type: "button", "data-toggle": "dropdown" }),
+                    React.createElement(
+                        "ul",
+                        { value: "" + content.status, className: "dropdown-menu" },
+                        React.createElement(
+                            "li",
+                            { className: "wishList dropdown-item", value: "wishList" },
+                            "Wish List"
+                        ),
+                        React.createElement(
+                            "li",
+                            { className: "inProgress dropdown-item", value: "inProgress" },
+                            "In Progress"
+                        ),
+                        React.createElement(
+                            "li",
+                            { className: "complete dropdown-item", value: "complete" },
+                            "Complete"
+                        )
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "deleteButtonContainer gridItemDeleteButton" },
+                    React.createElement("i", { className: "fas fa-trash deleteButton" })
+                )
+            ),
+            React.createElement(
+                "div",
+                { "data-serverdata": "" + content.image, className: "gridItemImage" },
+                React.createElement("img", { src: content.image, alt: content.name, className: "gridContentImage" })
+            ),
+            React.createElement(
+                "p",
+                { "data-serverdata": "" + content.name, className: "gridItemName" },
+                content.name
+            ),
+            React.createElement(
+                "p",
+                { "data-serverdata": "" + content.type, className: "gridItemType" },
+                content.type
+            ),
+            React.createElement(
+                "p",
+                { "data-serverdata": "" + content.notes, className: "gridItemNotes" },
+                content.notes
+            )
+        );
+    });
+
+    return React.createElement(
+        "div",
+        { id: "contentContainer", className: "gridContainer" },
+        contentNodes
+    );
+};
+
 // first get token
 $(document).ready(function () {
     getToken();
@@ -532,57 +759,116 @@ var getToken = function getToken() {
 
 // then build the controls and load from server
 var setup = function setup(csrf) {
-    // build controls, add and edit
-    ReactDOM.render(React.createElement(Controls, { csrf: csrf }), document.querySelector("#controls"));
-    $("#editButton").click(editMedia);
+    // first load preferences
+    sendAjax('GET', '/getPreferences', null, function (result) {
 
-    // change color of selects to selected status
-    var select = $("#statusField");
-    select.css("background-color", select.find(":selected").css("background-color"));
-    $("#statusField").change(function () {
+        // update css rule
+        var sheet = window.document.styleSheets[0];
+        sheet.addRule('.wishList', 'background-color: ' + result.wishListColor + " !important;");
+        sheet.addRule('.inProgress', 'background-color: ' + result.inProgressColor + " !important;");
+        sheet.addRule('.complete', 'background-color: ' + result.completeColor + " !important;");
+
+        // build controls, add and edit
+        ReactDOM.render(React.createElement(Controls, { csrf: csrf }), document.querySelector("#controls"));
+        $("#editButton").click(editMedia);
+
+        // change color of selects to selected status
         var select = $("#statusField");
-        select.css("background-color", select.find(":selected").css("background-color"));
+        select.attr("class", "custom-select " + select.find(":selected").attr("class"));
+        $("#statusField").change(function () {
+            var select = $("#statusField");
+            select.attr("class", "custom-select " + select.find(":selected").attr("class"));
+        });
+
+        layout = result.layout;
+        theme = result.theme;
+        loadContentFromServer(layout, theme);
     });
-    loadContentFromServer();
 };
 
 // lastly build table from server data
-var loadContentFromServer = function loadContentFromServer() {
+var loadContentFromServer = function loadContentFromServer(layout, theme) {
     sendAjax('GET', '/getMedia', null, function (data) {
-        var temp = $("<div></div>");
-        ReactDOM.render(React.createElement(ContentTable, { contentTable: data.media }), temp[0]);
 
-        $("#target").replaceWith(temp.children()[0]); // swap out tbody
+        // already has data, so render it
+        if (data.media.length > 0) {
+            // table
+            if (layout == "table") {
 
-        // update table when changing status
-        $("li").click(function (e) {
-            // update button parent visuals
-            var ul = $(e.target).closest('ul');
-            var button = $(e.target.parentElement.parentElement.querySelector("button"));
-            var value = e.target.getAttribute("value");
-            ul.attr("value", value);
-            button.attr("class", "rowDropDown btn btn-secondary dropdown-toggle " + value);
-            // don't fire if editing table
-            if (document.querySelector("#editButton").className.includes("editing")) {
-                var row = $(e.target).closest('tr');
-                row.find(".statusColumn").attr("class", "statusColumn " + value);
-                var _data = "name=" + row.find(".contentName")[0].innerText + ("&type=" + row.find(".contentType")[0].innerText) + ("&notes=" + row.find(".contentNotes")[0].innerText) + ("&image=" + row.find("img")[0].getAttribute("src")) + ("&status=" + value) + ("&uniqueid=" + row.attr("data-id")) + ("&_csrf=" + csrfToken);
-                sendAjax('PUT', '/main', _data, function () {
-                    loadContentFromServer();
-                }); // update on server
+                // table frame
+                ReactDOM.render(React.createElement(TableFrame, null), document.querySelector("#contentContainer"));
+                setupTableListeners();
+
+                // table contents
+                var temp = $("<div></div>");
+                ReactDOM.render(React.createElement(ContentTable, { contentTable: data.media }), temp[0]);
+
+                $("#target").replaceWith(temp.children()[0]); // swap out tbody
+
+                // update table when changing status
+                $("li").click(function (e) {
+                    // update button parent visuals
+                    var ul = $(e.target).closest('ul');
+                    var button = $(e.target.parentElement.parentElement.querySelector("button"));
+                    var value = e.target.getAttribute("value");
+                    ul.attr("value", value);
+                    button.attr("class", "rowDropDown btn btn-secondary dropdown-toggle " + value);
+                    // don't fire if editing table
+                    if (!document.querySelector("#addSubmitButton").className.includes("btn-secondary")) {
+                        var row = $(e.target).closest('tr');
+
+                        // update status
+                        row.find(".statusColumn").attr("class", "statusColumn " + value);
+
+                        // send to DB
+                        var _data = "name=" + row.find(".contentName").attr("data-serverdata") + ("&type=" + row.find(".contentType").attr("data-serverdata")) + ("&notes=" + row.find(".contentNotes").attr("data-serverdata")) + ("&image=" + row.find(".contentImage").attr("data-serverdata")) + ("&status=" + value) + ("&uniqueid=" + row.attr("data-id")) + ("&_csrf=" + csrfToken);
+                        sendAjax('PUT', '/main', _data, function () {
+                            loadContentFromServer(layout, theme);
+                        }); // update on server
+                    }
+                });
+            } else if (layout == "grid") {
+                // grid
+
+                var _temp = $("<div></div>"); // temporarily render the react component into temp
+                ReactDOM.render(React.createElement(ContentGrid, { contentGrid: data.media }), _temp[0]);
+
+                // replace content container with one created by react (child of temp)
+                $("#contentContainer").replaceWith(_temp.children()[0]);
+
+                // update table when changing status
+                $("li").click(function (e) {
+                    // update button parent visuals
+                    var ul = $(e.target).closest('ul');
+                    var button = $(e.target.parentElement.parentElement.querySelector("button"));
+                    var value = e.target.getAttribute("value");
+                    ul.attr("value", value);
+                    button.attr("class", "rowDropDown btn btn-secondary dropdown-toggle " + value);
+                    // don't fire if editing table
+                    if (!document.querySelector("#addSubmitButton").className.includes("btn-secondary")) {
+                        var gridItem = $(e.target).closest('.gridItemWrapper');
+                        // update status display
+                        gridItem.find(".gridStatus").attr("class", "gridStatus " + value);
+
+                        // send to DB
+                        var _data2 = "name=" + gridItem.find(".gridItemname").attr("data-serverdata") + ("&type=" + gridItem.find(".gridItemType").attr("data-serverdata")) + ("&notes=" + gridItem.find(".gridItemNotes").attr("data-serverdata")) + ("&image=" + gridItem.find(".gridItemImage").attr("data-serverdata")) + ("&status=" + value) + ("&uniqueid=" + gridItem.attr("data-id")) + ("&_csrf=" + csrfToken);
+                        sendAjax('PUT', '/main', _data2, function () {
+                            loadContentFromServer(layout, theme);
+                        }); // update on server
+                    }
+                });
             }
-        });
+        }
 
-        $(".deleteButtonContainer").click(function (e) {
-            var button = e.target;
-            // unmark row
-            if (button.className.includes("marked")) {
-                button.classList.remove("marked");
-            } // mark row
-            else {
-                    button.className += " marked";
-                }
-        });
+        // regardless if the content was rendered, setup controls
+        setupControlListeners();
+
+        // apply dark theme if enabled
+        if (theme == "dark") {
+            $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
+        } else {
+            $('link[title="darkTheme"]').remove();
+        }
     });
 };
 "use strict";
@@ -591,6 +877,12 @@ var loadContentFromServer = function loadContentFromServer() {
 var handleError = function handleError(message) {
     $("#errorMessage").text(message);
     $("#successMessage").empty();
+};
+
+// display success message in settings
+var handleSuccess = function handleSuccess(keyword) {
+    document.querySelector("#successMessage").innerHTML = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to preferences.</p>";
+    $("#errorMessage").empty();
 };
 
 // redirect to different page

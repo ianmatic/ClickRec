@@ -300,6 +300,12 @@ var handleError = function handleError(message) {
     $("#successMessage").empty();
 };
 
+// display success message in settings
+var handleSuccess = function handleSuccess(keyword) {
+    document.querySelector("#successMessage").innerHTML = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to preferences.</p>";
+    $("#errorMessage").empty();
+};
+
 // redirect to different page
 var redirect = function redirect(response) {
     window.location = response.redirect;
