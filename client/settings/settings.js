@@ -106,7 +106,11 @@ const ChangePasswordWindow = (props) => {
                     </div>
                     {/*CSRF is invisible*/}
                     <input type="hidden" name="_csrf" value={props.csrf} />
-                    <input className="startSubmit btn btn-outline-primary" type="submit" value="Change Password" />
+
+                    <div id="submitWrapper">
+                        <button type="button" className="btn btn-outline-primary returnButton"><i className="fas fa-arrow-left"></i></button>
+                        <input className="startSubmit btn btn-outline-primary" type="submit" value="Change Password" />
+                    </div>
                 </form>
                 <p id="successMessage"></p>
             </div>
@@ -141,7 +145,11 @@ const ChangeUsernameWindow = (props) => {
                     </div>
                     {/*CSRF is invisible*/}
                     <input type="hidden" name="_csrf" value={props.csrf} />
-                    <input className="startSubmit btn btn-outline-primary" type="submit" value="Change Username" />
+
+                    <div id="submitWrapper">
+                        <button type="button" className="btn btn-outline-primary returnButton"><i className="fas fa-arrow-left"></i></button>
+                        <input className="startSubmit btn btn-outline-primary" type="submit" value="Change Username" />
+                    </div>
                 </form>
                 <p id="successMessage"></p>
             </div>
@@ -171,6 +179,13 @@ const createChangePasswordWindow = (csrf) => {
             $(btn).siblings().attr("type", "password");
         }
     });
+
+    // setup back button
+    $(".returnButton").click((e) => {
+        e.preventDefault();
+        setup(csrf);
+    });
+
 };
 
 // render a new change username window
@@ -179,6 +194,12 @@ const createChangeUsernameWindow = (csrf) => {
         <ChangeUsernameWindow csrf={csrf} />,
         document.querySelector("#settingsContent")
     );
+
+    // setup back button
+    $(".returnButton").click((e) => {
+        e.preventDefault();
+        setup(csrf);
+    });
 };
 
 // render a new main window
@@ -222,11 +243,15 @@ const createMainWindow = (csrf) => {
 
     // apply dark theme if enabled
     sendAjax('GET', '/getPreferences', null, (result) => {
+        // apply dark theme if enabled
         if (result.theme == "dark") {
-            $('head').append('<link rel="stylesheet" type="text/css" href="/assets/darkStyle.css">');
+            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[title="lightTheme"]').prop('disabled', true);
+        } else {
+            $('link[title="darkTheme"]').prop('disabled', true);
+            $('link[title="lightTheme"]').prop('disabled', false);
         }
     });
-
 };
 
 const setup = (csrf) => {

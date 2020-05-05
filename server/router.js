@@ -11,6 +11,7 @@ const router = (app) => {
     mid.requiresLogin, controllers.Account.getPreferences);
   app.put('/changeColors', mid.requiresSecure, mid.requiresLogin, controllers.Account.changeColors);
   app.put('/changeLayout', mid.requiresSecure, mid.requiresLogin, controllers.Account.changeLayout);
+  app.put('/changeTypes', mid.requiresSecure, mid.requiresLogin, controllers.Account.changeTypes);
 
   // settings page
   app.get('/settings', mid.requiresSecure, mid.requiresLogin, controllers.Account.settingsPage);

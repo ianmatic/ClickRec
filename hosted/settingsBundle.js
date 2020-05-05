@@ -192,7 +192,16 @@ var ChangePasswordWindow = function ChangePasswordWindow(props) {
                         )
                     ),
                     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Change Password" })
+                    React.createElement(
+                        "div",
+                        { id: "submitWrapper" },
+                        React.createElement(
+                            "button",
+                            { type: "button", className: "btn btn-outline-primary returnButton" },
+                            React.createElement("i", { className: "fas fa-arrow-left" })
+                        ),
+                        React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Change Password" })
+                    )
                 ),
                 React.createElement("p", { id: "successMessage" })
             )
@@ -246,7 +255,16 @@ var ChangeUsernameWindow = function ChangeUsernameWindow(props) {
                         React.createElement("input", { id: "user", type: "text", name: "username", placeholder: "Choose Username", required: true })
                     ),
                     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Change Username" })
+                    React.createElement(
+                        "div",
+                        { id: "submitWrapper" },
+                        React.createElement(
+                            "button",
+                            { type: "button", className: "btn btn-outline-primary returnButton" },
+                            React.createElement("i", { className: "fas fa-arrow-left" })
+                        ),
+                        React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Change Username" })
+                    )
                 ),
                 React.createElement("p", { id: "successMessage" })
             )
@@ -273,11 +291,23 @@ var createChangePasswordWindow = function createChangePasswordWindow(csrf) {
                 $(btn).siblings().attr("type", "password");
             }
     });
+
+    // setup back button
+    $(".returnButton").click(function (e) {
+        e.preventDefault();
+        setup(csrf);
+    });
 };
 
 // render a new change username window
 var createChangeUsernameWindow = function createChangeUsernameWindow(csrf) {
     ReactDOM.render(React.createElement(ChangeUsernameWindow, { csrf: csrf }), document.querySelector("#settingsContent"));
+
+    // setup back button
+    $(".returnButton").click(function (e) {
+        e.preventDefault();
+        setup(csrf);
+    });
 };
 
 // render a new main window
@@ -318,8 +348,11 @@ var createMainWindow = function createMainWindow(csrf) {
 
     // apply dark theme if enabled
     sendAjax('GET', '/getPreferences', null, function (result) {
+        // apply dark theme if enabled
         if (result.theme == "dark") {
-            $('head').append('<link rel="stylesheet" type="text/css" href="/assets/darkStyle.css">');
+            $('link[title="darkTheme"]').prop('disabled', false);
+        } else {
+            $('link[title="darkTheme"]').prop('disabled', true);
         }
     });
 };
@@ -346,13 +379,25 @@ $(document).ready(function () {
 
 // display error message
 var handleError = function handleError(message) {
+    if (document.querySelector("#errorMessage").innerHTML !== "") {
+        $("#errorMessage").removeClass("flash");
+        $("#errorMessage")[0].offsetWidth;
+        $("#errorMessage").addClass("flash");
+    }
     $("#errorMessage").text(message);
     $("#successMessage").empty();
 };
 
 // display success message in settings
-var handleSuccess = function handleSuccess(keyword) {
-    document.querySelector("#successMessage").innerHTML = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to preferences.</p>";
+var handleSuccess = function handleSuccess() {
+    if (document.querySelector("#successMessage").innerHTML !== "") {
+        $("#successMessage").removeClass("flash");
+        $("#successMessage")[0].offsetWidth;
+        $("#successMessage").addClass("flash");
+    }
+
+    document.querySelector("#successMessage").innerHTML = "Success!";
+
     $("#errorMessage").empty();
 };
 

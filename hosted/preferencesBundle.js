@@ -10,8 +10,10 @@ var wishListSavedColor = void 0;
 var inProgressSavedColor = void 0;
 var completeSavedColor = void 0;
 
-var savedLayout = void 0;
-
+var savedLayout = void 0,
+    savedSizingType = void 0,
+    savedSizingValue = void 0;
+var savedTypes = void 0;
 var savedTheme = void 0;
 
 // Handles changing colors
@@ -31,22 +33,19 @@ var handleColorChange = function handleColorChange(e) {
 
     // change colors
     sendAjax('PUT', $("#changeColorForm").attr("action"), url, function () {
-        handleSuccess("colors");
+        handleSuccess();
 
         // reload theme
         sendAjax('GET', '/getPreferences', null, function (result) {
 
             // apply dark theme if enabled
             if (result.theme == "dark") {
-                $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
+                $('link[title="darkTheme"]').prop('disabled', false);
+                $('link[title="lightTheme"]').prop('disabled', false);
             } else {
-                $('link[title="darkTheme"]').remove();
+                $('link[title="darkTheme"]').prop('disabled', false);
+                $('link[title="lightTheme"]').prop('disabled', false);
             }
-        });
-
-        $("#successMessage").click(function (e) {
-            e.preventDefault();
-            setup(csrf);
         });
     });
 
@@ -58,14 +57,36 @@ var handleLayoutChange = function handleLayoutChange(e) {
     e.preventDefault();
     // change layout
     sendAjax('PUT', $("#changeLayoutForm").attr("action"), $("#changeLayoutForm").serialize(), function (result) {
-        handleSuccess("layout");
-        $("#successMessage").click(function (e) {
-            // setup success message link
-            e.preventDefault();
-            setup(csrf);
-        });
+        handleSuccess();
     });
 
+    return false;
+};
+
+// Handles updating types
+var handleTypesChange = function handleTypesChange(e) {
+    e.preventDefault();
+    var submitString = "";
+    var array = [];
+    $(".typeItem").each(function () {
+        array.push(this.getAttribute("data-serverdata"));
+    });
+    // change types
+    sendAjax('PUT', $("#changeTypesForm").attr("action"), "data=" + JSON.stringify(array) + "&_csrf=" + csrf, function (result) {
+        handleSuccess();
+    });
+
+    return false;
+};
+
+// Handles adding a new type to the list (not saving)
+var handleAddType = function handleAddType(e) {
+    e.preventDefault();
+    // change layout
+    e.preventDefault();
+    var val = document.querySelector("#addTextInput").value;
+    $("#typesList").append("<li data-serverdata=" + val + " class=\"typeItem\"><span>" + val + "</span><button class=\"btn btn-primary\">Edit</button></li>");
+    $("#addTextInput").val('');
     return false;
 };
 
@@ -148,8 +169,13 @@ var MainWindow = function MainWindow(props) {
                     ),
                     React.createElement(
                         "p",
+                        { className: "preferenceTitle" },
+                        "Theme:"
+                    ),
+                    React.createElement(
+                        "p",
                         { id: "themeText" },
-                        savedTheme + " theme"
+                        "" + savedTheme
                     ),
                     React.createElement(
                         "a",
@@ -171,9 +197,38 @@ var MainWindow = function MainWindow(props) {
                         "" + savedLayout
                     ),
                     React.createElement(
+                        "p",
+                        { className: "preferenceTitle" },
+                        "Sizing (Grid Only):"
+                    ),
+                    React.createElement(
+                        "p",
+                        { id: "sizingText" },
+                        "" + savedSizingType
+                    ),
+                    React.createElement(
                         "a",
                         { href: "", id: "changeLayoutLink" },
                         "Change Layout"
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "preferenceWrapper", id: "typesInfo" },
+                    React.createElement(
+                        "p",
+                        { className: "preferenceTitle" },
+                        "Types:"
+                    ),
+                    React.createElement(
+                        "p",
+                        { id: "layoutText" },
+                        "" + savedTypes
+                    ),
+                    React.createElement(
+                        "a",
+                        { href: "", id: "changeTypesLink" },
+                        "Change Types"
                     )
                 ),
                 React.createElement(
@@ -290,7 +345,16 @@ var ChangeColorsWindow = function ChangeColorsWindow(props) {
                         )
                     ),
                     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Save Colors" })
+                    React.createElement(
+                        "div",
+                        { id: "submitWrapper" },
+                        React.createElement(
+                            "button",
+                            { type: "button", className: "btn btn-outline-primary returnButton" },
+                            React.createElement("i", { className: "fas fa-arrow-left" })
+                        ),
+                        React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Save Colors" })
+                    )
                 ),
                 React.createElement("p", { id: "successMessage" })
             )
@@ -366,8 +430,125 @@ var ChangeLayoutWindow = function ChangeLayoutWindow(props) {
                             )
                         )
                     ),
+                    " ",
+                    React.createElement("br", null),
+                    React.createElement(
+                        "div",
+                        { className: "inputWrapper" },
+                        React.createElement(
+                            "label",
+                            { htmlFor: "sizingType" },
+                            "Sizing (Grid Only)"
+                        ),
+                        React.createElement("br", null),
+                        React.createElement(
+                            "select",
+                            { className: "custom-select", id: "sizingTypeField", name: "sizingType", required: true },
+                            React.createElement(
+                                "option",
+                                { value: "auto" },
+                                "Auto"
+                            ),
+                            React.createElement(
+                                "option",
+                                { value: "custom" },
+                                "Custom"
+                            )
+                        )
+                    ),
+                    React.createElement("input", { type: "range", name: "sizingValue", className: "custom-range", min: "100", max: "500", step: "50", id: "sizingValueRange" }),
                     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Save Layout" })
+                    React.createElement(
+                        "div",
+                        { id: "submitWrapper" },
+                        React.createElement(
+                            "button",
+                            { type: "button", className: "btn btn-outline-primary returnButton" },
+                            React.createElement("i", { className: "fas fa-arrow-left" })
+                        ),
+                        React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Save Layout" })
+                    )
+                ),
+                React.createElement("p", { id: "successMessage" })
+            )
+        )
+    );
+};
+
+// Change Types Page
+var ChangeTypesWindow = function ChangeTypesWindow(props) {
+    return (
+        // below top header
+        React.createElement(
+            "div",
+            { className: "windowContainer" },
+            React.createElement(
+                "header",
+                { className: "titleHeader" },
+                React.createElement(
+                    "h1",
+                    { className: "title" },
+                    "Change Your Types"
+                ),
+                React.createElement(
+                    "h2",
+                    { className: "subtitle" },
+                    "Add, Remove, Or Edit The Types You'd Like To Use"
+                )
+            ),
+            React.createElement(
+                "div",
+                { className: "window" },
+                React.createElement("p", { id: "errorMessage" }),
+                React.createElement(
+                    "div",
+                    { id: "manageTypesWrapper" },
+                    React.createElement(
+                        "form",
+                        { id: "addTypeInput",
+                            className: "input-group",
+                            onSubmit: handleAddType
+                        },
+                        React.createElement("input", { id: "addTextInput", type: "text", className: "form-control", placeholder: "New Type", required: true }),
+                        React.createElement(
+                            "div",
+                            { className: "input-group-append" },
+                            React.createElement("input", { className: "btn btn-outline-primary", type: "submit", id: "addTypeButton", value: "Add" })
+                        )
+                    ),
+                    React.createElement("i", { className: "fas fa-trash", id: "deleteTypeButton" })
+                ),
+                React.createElement(
+                    "form",
+                    { id: "changeTypesForm",
+                        name: "changeTypesForm",
+                        onSubmit: handleTypesChange,
+                        action: "/changeTypes",
+                        method: "PUT",
+                        className: "startForm"
+                    },
+                    React.createElement(
+                        "div",
+                        { className: "inputWrapper", id: "typesLabel" },
+                        React.createElement(
+                            "label",
+                            { htmlFor: "Types" },
+                            "Types:"
+                        ),
+                        React.createElement("br", null)
+                    ),
+                    React.createElement("div", { id: "typesListContainer" }),
+                    React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+                    React.createElement(
+                        "div",
+                        { id: "submitWrapper" },
+                        React.createElement(
+                            "button",
+                            { type: "button", className: "btn btn-outline-primary returnButton" },
+                            React.createElement("i", { className: "fas fa-arrow-left" })
+                        ),
+                        React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Save Types" })
+                    )
                 ),
                 React.createElement("p", { id: "successMessage" })
             )
@@ -465,7 +646,13 @@ var createChangeColorWindow = function createChangeColorWindow(csrf) {
 
     // update preview on change
     $('#themeField').on('change', function (e) {
-        document.querySelector('iframe').contentWindow.loadContentFromServer(savedLayout, this.value);
+        document.querySelector('iframe').contentWindow.loadContentFromServer(savedLayout, this.value, savedSizingValue);
+    });
+
+    // setup back button
+    $(".returnButton").click(function (e) {
+        e.preventDefault();
+        setup(csrf);
     });
 };
 
@@ -475,11 +662,138 @@ var createChangeLayoutWindow = function createChangeLayoutWindow(csrf) {
 
     // update select to loaded value
     $("#layoutField option[value=" + savedLayout).prop('selected', 'selected');
+    $("#sizingTypeField option[value=" + savedSizingType + "]").prop('selected', 'selected');
+    document.querySelector("#sizingValueRange").style.display = savedSizingType === "auto" && "none" || "inline-block";
+    document.querySelector("#sizingvalueRange").value = parseInt(savedSizingValue, 10);
 
     // update preview on change
     $('#layoutField').on('change', function (e) {
-        document.querySelector('iframe').contentWindow.loadContentFromServer(this.value, savedTheme);
+        document.querySelector('iframe').contentWindow.loadContentFromServer(this.value, savedTheme, $("#sizingValueRange").val());
     });
+    $("#sizingTypeField").on('change', function (e) {
+        // toggle range
+        document.querySelector("#sizingValueRange").style.display = this.value === "auto" && "none" || "inline-block";
+        document.querySelector("#sizingvalueRange").value = this.value === "auto" && "300px" || parseInt(savedSizingValue, 10);
+        document.querySelector('iframe').contentWindow.loadContentFromServer($('#layoutField').val(), savedTheme, $("#sizingValueRange").val());
+    });
+    $("#sizingValueRange").on('input', function (e) {
+        if (savedLayout === "grid") {
+            $("iframe").contents().find(".gridItemWrapper").css("height", this.value);
+            $("iframe").contents().find(".gridItemWrapper").css("width", parseInt(this.value, 10) * 0.67 + "px");
+        }
+    });
+
+    // setup back button
+    $(".returnButton").click(function (e) {
+        e.preventDefault();
+        setup(csrf);
+    });
+};
+
+// helper function for toggling functionality of edit type buttons
+function SetupEditTypeButtons() {
+    // setup edit buttons
+    $(".editTypeButton").click(function (e) {
+        e.preventDefault();
+        var span = $(this).siblings();
+        // disable
+        if (span.attr('contenteditable') === "true") {
+            span[0].focus();
+            span.attr('contenteditable', 'false');
+            span.css('text-overflow', 'ellipsis');
+            this.innerHTML = "Edit";
+            this.parentElement.setAttribute("data-serverdata", span.text());
+        }
+        // enable
+        else {
+                span.attr('contenteditable', 'true');
+                span[0].focus();
+                span.css('text-overflow', 'inherit');
+                this.innerHTML = "Finish";
+            }
+    });
+}
+
+// render a new change types window
+var createChangeTypesWindow = function createChangeTypesWindow(csrf) {
+    ReactDOM.render(React.createElement(ChangeTypesWindow, { csrf: csrf }), document.querySelector("#preferencesContent"));
+
+    // render list of types
+    ReactDOM.render(React.createElement(TypesList, { types: savedTypes }), document.querySelector("#typesListContainer"));
+    // setup delete button
+    $("#deleteTypeButton").click(function (e) {
+        $(".typeItem").each(function () {
+            $(this).find('span').attr('contenteditable', 'false');
+        });
+        if ($("#deleteTypeButton").hasClass("saveDeletion")) {
+            $(".typeItem").each(function () {
+                $(this).find('button')[0].innerHTML = "Edit";
+                if ($(this).hasClass("marked")) {
+                    $(this).remove();
+                }
+            });
+            SetupEditTypeButtons();
+            $("#deleteTypeButton").removeClass("saveDeletion"); // update delete button
+        } else {
+            $(".editTypeButton").unbind("click");
+            $(".typeItem").each(function () {
+                var typeButton = $(this).find('button');
+                var typeValue = $(this).find('span');
+
+                typeButton[0].innerHTML = "Select";
+                typeButton.click(function (e) {
+                    if (e.target.innerHTML === "Select") {
+                        e.target.innerHTML = "Selected";
+                        $(e.target).closest(".typeItem").addClass("marked");
+                    } else {
+                        e.target.innerHTML = "Select";
+                        $(e.target).closest(".typeItem").removeClass("marked");
+                    }
+                });
+            });
+
+            $("#deleteTypeButton").addClass("saveDeletion"); // update delete button
+        }
+    });
+
+    SetupEditTypeButtons();
+
+    // setup back button
+    $(".returnButton").click(function (e) {
+        e.preventDefault();
+        setup(csrf);
+    });
+};
+
+// build list of types
+var TypesList = function TypesList(props) {
+
+    // build li's with attached buttons
+    var contentNodes = props.types.map(function (content) {
+        return React.createElement(
+            "li",
+            { "data-serverdata": content, className: "typeItem" },
+            React.createElement(
+                "span",
+                null,
+                content
+            ),
+            React.createElement(
+                "button",
+                { className: "btn btn-primary editTypeButton" },
+                "Edit"
+            )
+        );
+    });
+
+    return (
+        // need to wrap in div to submit, so submit with tbody then swap with table tbody
+        React.createElement(
+            "ul",
+            { id: "typesList" },
+            contentNodes
+        )
+    );
 };
 
 // render a new main window
@@ -503,6 +817,15 @@ var createMainWindow = function createMainWindow(csrf) {
         createChangeLayoutWindow(csrf);
         return false;
     };
+
+    // setup changeTypes link
+    var changeTypesLink = document.querySelector("#changeTypesLink");
+    changeTypesLink.onclick = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        createChangeTypesWindow(csrf);
+        return false;
+    };
 };
 
 // default to start window
@@ -523,12 +846,17 @@ var setup = function setup(csrf) {
 
         savedLayout = result.layout;
         savedTheme = result.theme;
+        savedSizingType = result.sizingType;
+        savedSizingValue = result.sizingValue;
+        savedTypes = result.types;
 
         // apply dark theme if enabled
         if (savedTheme == "dark") {
-            $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
+            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[title="lightTheme"]').prop('disabled', false);
         } else {
-            $('link[title="darkTheme"]').remove();
+            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[title="lightTheme"]').prop('disabled', false);
         }
 
         createMainWindow(csrf);
@@ -543,19 +871,43 @@ var getToken = function getToken() {
 };
 
 $(document).ready(function () {
+    // reload theme
+    sendAjax('GET', '/getPreferences', null, function (result) {
+
+        // apply dark theme if enabled
+        if (result.theme == "dark") {
+            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[title="lightTheme"]').prop('disabled', false);
+        } else {
+            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[title="lightTheme"]').prop('disabled', false);
+        }
+    });
     getToken();
 });
 "use strict";
 
 // display error message
 var handleError = function handleError(message) {
+    if (document.querySelector("#errorMessage").innerHTML !== "") {
+        $("#errorMessage").removeClass("flash");
+        $("#errorMessage")[0].offsetWidth;
+        $("#errorMessage").addClass("flash");
+    }
     $("#errorMessage").text(message);
     $("#successMessage").empty();
 };
 
 // display success message in settings
-var handleSuccess = function handleSuccess(keyword) {
-    document.querySelector("#successMessage").innerHTML = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to preferences.</p>";
+var handleSuccess = function handleSuccess() {
+    if (document.querySelector("#successMessage").innerHTML !== "") {
+        $("#successMessage").removeClass("flash");
+        $("#successMessage")[0].offsetWidth;
+        $("#successMessage").addClass("flash");
+    }
+
+    document.querySelector("#successMessage").innerHTML = "Success!";
+
     $("#errorMessage").empty();
 };
 

@@ -1,5 +1,6 @@
 let layout;
 let theme;
+let sizing;
 
 // used in all layouts
 function setupControlListeners() {
@@ -195,7 +196,9 @@ const addMedia = (e) => {
     // don't allow adding if editing
     if (!document.querySelector("#addSubmitButton").className.includes("btn-secondary")) {
         sendAjax('POST', $("#addForm").attr("action"), $("#addForm").serialize(), function () {
-            loadContentFromServer(layout, theme);
+            document.querySelector("#addForm").reset();
+            $("#statusField").trigger('change');
+            loadContentFromServer(layout, theme, sizing);
         });
     }
     else {
@@ -318,7 +321,7 @@ const saveMedia = (e) => {
         sendAjax('PUT', '/main', data, () => {
             // only load on last one
             if (i == items.length - 1) {
-                loadContentFromServer(layout, theme);
+                loadContentFromServer(layout, theme, sizing);
             }
         }); // update on server
     }
@@ -437,11 +440,11 @@ const Controls = (props) => {
                         <label className="col-2 col-form-label" for="type">Type*: </label>
                         <div className="col-6">
                             <select className="custom-select" id="typeField" name="type" required="">
-                                <option value="film">Film</option>
-                                <option value="tv">TV</option>
-                                <option value="game">Game</option>
-                                <option value="literature">Literature</option>
-                                <option value="music">Music</option>
+                                <option value="Film">Film</option>
+                                <option value="TV">TV</option>
+                                <option value="Game">Game</option>
+                                <option value="Literature">Literature</option>
+                                <option value="Music">Music</option>
                             </select>
                         </div>
                     </div>
@@ -642,12 +645,21 @@ const setup = function (csrf) {
 
         layout = result.layout;
         theme = result.theme
-        loadContentFromServer(layout, theme);
+        sizing = result.sizingValue;
+        loadContentFromServer(layout, theme, sizing);
     });
 };
 
 // lastly build table from server data
-const loadContentFromServer = (layout, theme) => {
+const loadContentFromServer = (layout, theme, sizing) => {
+    // apply dark theme if enabled
+    if (theme == "dark") {
+        $('link[title="darkTheme"]').prop('disabled', false);
+        $('link[title="lightTheme"]').prop('disabled', true);
+    } else {
+        $('link[title="darkTheme"]').prop('disabled', true);
+        $('link[title="lightTheme"]').prop('disabled', false);
+    }
     sendAjax('GET', '/getMedia', null, (data) => {
 
         // already has data, so render it
@@ -692,7 +704,7 @@ const loadContentFromServer = (layout, theme) => {
                             `&uniqueid=${row.attr("data-id")}` +
                             `&_csrf=${csrfToken}`;
                         sendAjax('PUT', '/main', data, () => {
-                            loadContentFromServer(layout, theme);
+                            loadContentFromServer(layout, theme, sizing);
                         }); // update on server
                     }
                 });
@@ -731,23 +743,18 @@ const loadContentFromServer = (layout, theme) => {
                             `&uniqueid=${gridItem.attr("data-id")}` +
                             `&_csrf=${csrfToken}`;
                         sendAjax('PUT', '/main', data, () => {
-                            loadContentFromServer(layout, theme);
+                            loadContentFromServer(layout, theme, sizing);
                         }); // update on server
                     }
                 });
+
+                $(".gridItemWrapper").css("height", sizing);
+                $(".gridItemWrapper").css("width", (parseInt(sizing, 10) * 0.67) + "px");
             }
         }
 
         // regardless if the content was rendered, setup controls
         setupControlListeners();
-
-
-        // apply dark theme if enabled
-        if (theme == "dark") {
-            $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
-        } else {
-            $('link[title="darkTheme"]').remove();
-        }
     });
 
 };

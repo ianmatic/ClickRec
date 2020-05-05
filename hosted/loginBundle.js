@@ -290,19 +290,32 @@ var getToken = function getToken() {
 };
 
 $(document).ready(function () {
+    $('link[title="darkTheme"]').prop('disabled', true);
     getToken();
 });
 "use strict";
 
 // display error message
 var handleError = function handleError(message) {
+    if (document.querySelector("#errorMessage").innerHTML !== "") {
+        $("#errorMessage").removeClass("flash");
+        $("#errorMessage")[0].offsetWidth;
+        $("#errorMessage").addClass("flash");
+    }
     $("#errorMessage").text(message);
     $("#successMessage").empty();
 };
 
 // display success message in settings
-var handleSuccess = function handleSuccess(keyword) {
-    document.querySelector("#successMessage").innerHTML = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to preferences.</p>";
+var handleSuccess = function handleSuccess() {
+    if (document.querySelector("#successMessage").innerHTML !== "") {
+        $("#successMessage").removeClass("flash");
+        $("#successMessage")[0].offsetWidth;
+        $("#successMessage").addClass("flash");
+    }
+
+    document.querySelector("#successMessage").innerHTML = "Success!";
+
     $("#errorMessage").empty();
 };
 

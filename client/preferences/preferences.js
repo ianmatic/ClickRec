@@ -8,8 +8,8 @@ let wishListSavedColor;
 let inProgressSavedColor;
 let completeSavedColor;
 
-let savedLayout;
-
+let savedLayout, savedSizingType, savedSizingValue;
+let savedTypes;
 let savedTheme;
 
 // Handles changing colors
@@ -29,22 +29,19 @@ const handleColorChange = (e) => {
 
     // change colors
     sendAjax('PUT', $("#changeColorForm").attr("action"), url, () => {
-        handleSuccess("colors");
+        handleSuccess();
 
         // reload theme
         sendAjax('GET', '/getPreferences', null, (result) => {
-    
+
             // apply dark theme if enabled
             if (result.theme == "dark") {
-                $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
+                $('link[title="darkTheme"]').prop('disabled', false);
+                $('link[title="lightTheme"]').prop('disabled', false);
             } else {
-                $('link[title="darkTheme"]').remove();
-            } 
-        });
-
-        $("#successMessage").click((e) => {
-            e.preventDefault();
-            setup(csrf);
+                $('link[title="darkTheme"]').prop('disabled', false);
+                $('link[title="lightTheme"]').prop('disabled', false);
+            }
         });
     });
 
@@ -56,13 +53,36 @@ const handleLayoutChange = (e) => {
     e.preventDefault();
     // change layout
     sendAjax('PUT', $("#changeLayoutForm").attr("action"), $("#changeLayoutForm").serialize(), (result) => {
-        handleSuccess("layout");
-        $("#successMessage").click((e) => { // setup success message link
-            e.preventDefault();
-            setup(csrf);
-        })
+        handleSuccess();
     });
 
+    return false;
+};
+
+// Handles updating types
+const handleTypesChange = (e) => {
+    e.preventDefault();
+    let submitString = "";
+    let array = [];
+    $(".typeItem").each(function() {
+        array.push(this.getAttribute("data-serverdata"));
+    });
+    // change types
+    sendAjax('PUT', $("#changeTypesForm").attr("action"), `data=${JSON.stringify(array)}&_csrf=${csrf}`, (result) => {
+        handleSuccess();
+    });
+
+    return false;
+};
+
+// Handles adding a new type to the list (not saving)
+const handleAddType = (e) => {
+    e.preventDefault();
+    // change layout
+    e.preventDefault();
+    const val = document.querySelector("#addTextInput").value;
+    $("#typesList").append(`<li data-serverdata=${val} class="typeItem"><span>${val}</span><button class="btn btn-primary">Edit</button></li>`);
+    $("#addTextInput").val('');
     return false;
 };
 
@@ -95,13 +115,21 @@ const MainWindow = (props) => {
                             <div id="completePreview" className="colorPreview complete"></div>
                         </div>
                     </div>
-                    <p id="themeText">{`${savedTheme} theme`}</p>
+                    <p className="preferenceTitle">Theme:</p>
+                    <p id="themeText">{`${savedTheme}`}</p>
                     <a href="" id="changeColorsLink">Change Colors</a>
                 </div>
                 <div className="preferenceWrapper" id="layoutInfo">
                     <p className="preferenceTitle">Layout:</p>
                     <p id="layoutText">{`${savedLayout}`}</p>
+                    <p className="preferenceTitle">Sizing (Grid Only):</p>
+                    <p id="sizingText">{`${savedSizingType}`}</p>
                     <a href="" id="changeLayoutLink">Change Layout</a>
+                </div>
+                <div className="preferenceWrapper" id="typesInfo">
+                    <p className="preferenceTitle">Types:</p>
+                    <p id="layoutText">{`${savedTypes}`}</p>
+                    <a href="" id="changeTypesLink">Change Types</a>
                 </div>
                 <div id="mainPreviewPage">
                     {/*Main preview */}
@@ -165,7 +193,10 @@ const ChangeColorsWindow = (props) => {
                     </div>
                     {/*CSRF is invisible*/}
                     <input type="hidden" name="_csrf" value={props.csrf} />
-                    <input className="startSubmit btn btn-outline-primary" type="submit" value="Save Colors" />
+                    <div id="submitWrapper">
+                        <button type="button" className="btn btn-outline-primary returnButton"><i className="fas fa-arrow-left"></i></button>
+                        <input className="startSubmit btn btn-outline-primary" type="submit" value="Save Colors" />
+                    </div>
                 </form>
                 <p id="successMessage"></p>
             </div>
@@ -205,10 +236,76 @@ const ChangeLayoutWindow = (props) => {
                             <option value="table">Table</option>
                             <option value="grid">Grid</option>
                         </select>
+                    </div> <br />
+                    {/*Item Sizing*/}
+                    <div className="inputWrapper">
+                        <label htmlFor="sizingType">Sizing (Grid Only)</label><br />
+                        <select className="custom-select" id="sizingTypeField" name="sizingType" required>
+                            <option value="auto">Auto</option>
+                            <option value="custom">Custom</option>
+                        </select>
                     </div>
+                    {/*Custom Size*/}
+                    <input type="range" name="sizingValue" className="custom-range" min="100" max="500" step="50" id="sizingValueRange" />
+
                     {/*CSRF is invisible*/}
                     <input type="hidden" name="_csrf" value={props.csrf} />
-                    <input className="startSubmit btn btn-outline-primary" type="submit" value="Save Layout" />
+
+                    <div id="submitWrapper">
+                        <button type="button" className="btn btn-outline-primary returnButton"><i className="fas fa-arrow-left"></i></button>
+                        <input className="startSubmit btn btn-outline-primary" type="submit" value="Save Layout" />
+                    </div>
+                </form>
+                <p id="successMessage"></p>
+            </div>
+        </div>
+    );
+};
+
+// Change Types Page
+const ChangeTypesWindow = (props) => {
+    return (
+        // below top header
+        <div className="windowContainer">
+            {/*Title and subtitle*/}
+            <header className="titleHeader">
+                <h1 className="title">Change Your Types</h1>
+                <h2 className="subtitle">Add, Remove, Or Edit The Types You'd Like To Use</h2>
+            </header>
+            {/*Error message and form*/}
+            <div className="window">
+                <p id="errorMessage"></p>
+                {/*Add Type*/}
+                <div id="manageTypesWrapper">
+                    <form id="addTypeInput"
+                        className="input-group"
+                        onSubmit={handleAddType}
+                    >
+                        <input id="addTextInput" type="text" className="form-control" placeholder="New Type" required />
+                        <div className="input-group-append">
+                            <input className="btn btn-outline-primary" type="submit" id="addTypeButton" value="Add" />
+                        </div>
+                    </form>
+                    <i className="fas fa-trash" id="deleteTypeButton"></i>
+                </div>
+                <form id="changeTypesForm"
+                    name="changeTypesForm"
+                    onSubmit={handleTypesChange}
+                    action="/changeTypes"
+                    method="PUT"
+                    className="startForm"
+                >
+                    {/*Types*/}
+                    <div className="inputWrapper" id="typesLabel">
+                        <label htmlFor="Types">Types:</label><br />
+                    </div>
+                    <div id="typesListContainer"></div>
+                    {/*CSRF is invisible*/}
+                    <input type="hidden" name="_csrf" value={props.csrf} />
+                    <div id="submitWrapper">
+                        <button type="button" className="btn btn-outline-primary returnButton"><i className="fas fa-arrow-left"></i></button>
+                        <input className="startSubmit btn btn-outline-primary" type="submit" value="Save Types" />
+                    </div>
                 </form>
                 <p id="successMessage"></p>
             </div>
@@ -309,7 +406,13 @@ const createChangeColorWindow = (csrf) => {
 
     // update preview on change
     $('#themeField').on('change', function (e) {
-        document.querySelector('iframe').contentWindow.loadContentFromServer(savedLayout, this.value);
+        document.querySelector('iframe').contentWindow.loadContentFromServer(savedLayout, this.value, savedSizingValue);
+    });
+
+    // setup back button
+    $(".returnButton").click((e) => {
+        e.preventDefault();
+        setup(csrf);
     });
 };
 
@@ -322,11 +425,130 @@ const createChangeLayoutWindow = (csrf) => {
 
     // update select to loaded value
     $(`#layoutField option[value=${savedLayout}`).prop('selected', 'selected');
+    $(`#sizingTypeField option[value=${savedSizingType}]`).prop('selected', 'selected');
+    document.querySelector("#sizingValueRange").style.display = savedSizingType === "auto" && "none" || "inline-block";
+    document.querySelector("#sizingvalueRange").value = parseInt(savedSizingValue, 10);
 
     // update preview on change
     $('#layoutField').on('change', function (e) {
-        document.querySelector('iframe').contentWindow.loadContentFromServer(this.value, savedTheme);
+        document.querySelector('iframe').contentWindow.loadContentFromServer(this.value, savedTheme, $(`#sizingValueRange`).val());
     });
+    $(`#sizingTypeField`).on('change', function (e) {
+        // toggle range
+        document.querySelector("#sizingValueRange").style.display = this.value === "auto" && "none" || "inline-block";
+        document.querySelector("#sizingvalueRange").value = this.value === "auto" && "300px" || parseInt(savedSizingValue, 10);
+        document.querySelector('iframe').contentWindow.loadContentFromServer($('#layoutField').val(), savedTheme, $(`#sizingValueRange`).val());
+    });
+    $(`#sizingValueRange`).on('input', function (e) {
+        if (savedLayout === "grid") {
+            $("iframe").contents().find(".gridItemWrapper").css("height", this.value);
+            $("iframe").contents().find(".gridItemWrapper").css("width", (parseInt(this.value, 10) * 0.67) + "px");
+        }
+    });
+
+    // setup back button
+    $(".returnButton").click((e) => {
+        e.preventDefault();
+        setup(csrf);
+    });
+};
+
+// helper function for toggling functionality of edit type buttons
+function SetupEditTypeButtons() {
+    // setup edit buttons
+    $(".editTypeButton").click(function (e) {
+        e.preventDefault();
+        const span = $(this).siblings();
+        // disable
+        if (span.attr('contenteditable') === "true") {
+            span[0].focus();
+            span.attr('contenteditable', 'false');
+            span.css('text-overflow', 'ellipsis');
+            this.innerHTML = "Edit";
+            this.parentElement.setAttribute("data-serverdata", span.text());
+        }
+        // enable
+        else {
+            span.attr('contenteditable', 'true');
+            span[0].focus();
+            span.css('text-overflow', 'inherit');
+            this.innerHTML = "Finish";
+        }
+    });
+}
+
+// render a new change types window
+const createChangeTypesWindow = (csrf) => {
+    ReactDOM.render(
+        <ChangeTypesWindow csrf={csrf} />,
+        document.querySelector("#preferencesContent")
+    );
+
+    // render list of types
+    ReactDOM.render(
+        <TypesList types={savedTypes} />, document.querySelector("#typesListContainer"));
+    // setup delete button
+    $("#deleteTypeButton").click((e) => {
+        $(".typeItem").each(function () {
+            $(this).find('span').attr('contenteditable', 'false');
+        });
+        if ($("#deleteTypeButton").hasClass("saveDeletion")) {
+            $(".typeItem").each(function () {
+                $(this).find('button')[0].innerHTML = "Edit";
+                if ($(this).hasClass("marked")) {
+                    $(this).remove();
+                }
+            });
+            SetupEditTypeButtons();
+            $("#deleteTypeButton").removeClass("saveDeletion"); // update delete button
+        }
+        else {
+            $(".editTypeButton").unbind("click");
+            $(".typeItem").each(function () {
+                const typeButton = $(this).find('button');
+                const typeValue = $(this).find('span');
+
+                typeButton[0].innerHTML = "Select";
+                typeButton.click((e) => {
+                    if (e.target.innerHTML === "Select") {
+                        e.target.innerHTML = "Selected";
+                        $(e.target).closest(".typeItem").addClass("marked");
+                    }
+                    else {
+                        e.target.innerHTML = "Select";
+                        $(e.target).closest(".typeItem").removeClass("marked");
+                    }
+                });
+            });
+
+            $("#deleteTypeButton").addClass("saveDeletion"); // update delete button
+        }
+
+    });
+
+    SetupEditTypeButtons();
+
+    // setup back button
+    $(".returnButton").click((e) => {
+        e.preventDefault();
+        setup(csrf);
+    });
+};
+
+// build list of types
+const TypesList = function (props) {
+
+    // build li's with attached buttons
+    const contentNodes = props.types.map(function (content) {
+        return <li data-serverdata={content} className="typeItem"><span>{content}</span><button className="btn btn-primary editTypeButton">Edit</button></li>
+    });
+
+    return (
+        // need to wrap in div to submit, so submit with tbody then swap with table tbody
+        <ul id="typesList">
+            {contentNodes}
+        </ul>
+    );
 };
 
 // render a new main window
@@ -353,6 +575,15 @@ const createMainWindow = (csrf) => {
         createChangeLayoutWindow(csrf);
         return false;
     };
+
+    // setup changeTypes link
+    const changeTypesLink = document.querySelector("#changeTypesLink");
+    changeTypesLink.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        createChangeTypesWindow(csrf);
+        return false;
+    };
 };
 
 // default to start window
@@ -373,13 +604,18 @@ const setup = (csrf) => {
 
         savedLayout = result.layout;
         savedTheme = result.theme;
+        savedSizingType = result.sizingType;
+        savedSizingValue = result.sizingValue;
+        savedTypes = result.types;
 
         // apply dark theme if enabled
         if (savedTheme == "dark") {
-            $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
+            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[title="lightTheme"]').prop('disabled', false);
         } else {
-            $('link[title="darkTheme"]').remove();
-        } 
+            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[title="lightTheme"]').prop('disabled', false);
+        }
 
         createMainWindow(csrf);
     });
@@ -393,5 +629,17 @@ const getToken = () => {
 };
 
 $(document).ready(function () {
+            // reload theme
+            sendAjax('GET', '/getPreferences', null, (result) => {
+
+                // apply dark theme if enabled
+                if (result.theme == "dark") {
+                    $('link[title="darkTheme"]').prop('disabled', false);
+                    $('link[title="lightTheme"]').prop('disabled', false);
+                } else {
+                    $('link[title="darkTheme"]').prop('disabled', false);
+                    $('link[title="lightTheme"]').prop('disabled', false);
+                }
+            });
     getToken();
 });

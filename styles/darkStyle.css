@@ -1,0 +1,125 @@
+/*Main Page*/
+body {
+    background-color: black;
+    color: white;
+    background: linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,.85)), url(img/pattern.png);
+}
+nav {
+    background-color: black;
+}
+#logoWrapper {
+    background-color: black;
+    color: white;
+}
+
+#searchInput {
+    background-color: black;
+    color: white;
+}
+#searchInput::placeholder {
+    color: white;
+}
+
+.dropdown-menu {
+    background-color: black !important;
+    border: 1px solid white !important;
+}
+.dropdown-item {
+    background-color: black !important;
+    color: white !important;
+}
+.form-control {
+    background-color: black !important;
+    color: white !important;
+}
+.allFilter {
+    background-color: black;
+    color: white;
+}
+
+#typeFilter option {
+    background-color: black;
+    color: white;
+}
+
+#controls {
+    background-color: black;
+    color: white;
+}
+
+.form-control::placeholder {
+    color: white !important;
+}
+
+.gridItemWrapper {
+    background-color: black;
+    color: white;
+}
+.custom-select {
+    background-color: black !important;
+    color: white !important;
+}
+.custom-select option {
+    background-color: black;
+    color: white;
+}
+
+thead {
+    background-color: black;
+    color: white;
+}
+
+tr {
+    color: white;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: black !important;
+}
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: dimgray !important;
+}
+
+.emptyContent {
+    color: white;
+}
+
+
+
+/*Preferences and Settings*/
+.title, .subtitle {
+    color: white;
+}
+
+.window {
+    background-color: black;
+    color: white;
+}
+
+.colorPreview {
+    border: 1px solid white;
+}
+
+.preview {
+    border: 4px solid white;
+}
+
+#user, #pass, #pass2 {
+    background-color: black;
+    color: white;
+}
+#user::placeholder, #pass::placeholder, #pass2::placeholder {
+    color: white;
+}
+
+.showButton {
+    background-color: black !important;
+    color: white !important;
+}
+
+.showButton:hover, .showButton:focus, .showButton:active {
+    background: black !important;
+    color: white !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }

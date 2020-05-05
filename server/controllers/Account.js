@@ -193,13 +193,15 @@ const changePassword = (req, res) => {
 const getPreferences = (req, res) => {
   const rq = req;
   const rs = res;
-  console.log(`account: ${rq.session.account.theme}`);
   const preferences = {
     wishListColor: rq.session.account.wishListColor,
     inProgressColor: rq.session.account.inProgressColor,
     completeColor: rq.session.account.completeColor,
     layout: rq.session.account.layout,
     theme: rq.session.account.theme,
+    sizingType: rq.session.account.sizingType,
+    sizingValue: rq.session.account.sizingValue,
+    types: rq.session.account.types,
   };
   return rs.json(preferences);
 };
@@ -241,11 +243,44 @@ const changeLayout = (req, res) => {
 
   // update layout
   const updatePromise = Account.AccountModel.update({ _id: rq.session.account._id },
-    { $set: { layout: rq.body.layout } });
+    {
+      $set: {
+        layout: rq.body.layout,
+        sizingType: rq.body.sizingType,
+        sizingValue: `${rq.body.sizingValue}px`,
+      },
+    });
   updatePromise.then(() => {
     // update current
     rq.session.account.layout = rq.body.layout;
+    rq.session.account.sizingType = rq.body.sizingType;
+    rq.session.account.sizingValue = `${rq.body.sizingValue}px`;
     rs.json({ layout: '/preferences' });
+  });
+  updatePromise.catch((err) => {
+    console.log(err);
+    return rs.status(400).json({ error: 'An error occurred' });
+  });
+};
+
+// change types
+const changeTypes = (req, res) => {
+  console.log('changing types...');
+  const rq = req;
+  const rs = res;
+
+  const newData = JSON.parse(rq.body.data);
+  // update types
+  const updatePromise = Account.AccountModel.update({ _id: rq.session.account._id },
+    {
+      $set: {
+        types: newData,
+      },
+    });
+  updatePromise.then(() => {
+    // update current
+    rq.session.account.types = newData;
+    rs.json({ types: '/preferences' });
   });
   updatePromise.catch((err) => {
     console.log(err);
@@ -265,4 +300,5 @@ module.exports.changePassword = changePassword;
 module.exports.changeUsername = changeUsername;
 module.exports.changeColors = changeColors;
 module.exports.changeLayout = changeLayout;
+module.exports.changeTypes = changeTypes;
 module.exports.getPreferences = getPreferences;

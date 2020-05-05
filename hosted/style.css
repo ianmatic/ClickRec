@@ -5,12 +5,10 @@ html, body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background-color: white;
     font-family: 'Quicksand', sans-serif !important;
     font-weight: 500 !important;
 }
 body {
-  background: linear-gradient(rgba(255,255,255,.85), rgba(255,255,255,.85)), url("img/pattern.png");
   background-size: cover !important;
 }
 a {
@@ -23,7 +21,6 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #ededed;
   position: fixed;
   border-bottom: 2px solid #bfbfbf;
   color: black;
@@ -48,7 +45,6 @@ a {
 nav {
     width: 100%;
     height: 100px;
-    background-color: #ededed;
     position: fixed;
     z-index: 2;
     border-bottom: 2px solid #bfbfbf;
@@ -62,23 +58,33 @@ nav {
 #successMessage {
   color: green;
   text-align: center;
-  margin-top: 2em;
+  margin-top: 1em;
   margin-bottom: 0;
+}
+
+.flash {
+  animation-name: flash;
+  animation-duration: .5s;
+}
+
+@keyframes flash {
+  50% {
+    color: white;
+  }
 }
 
 /*Login/Register*/
 
 .window {
   margin: 0 auto;
-  width: 50%;
+  width: 80%;
   max-width: 500px;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  background-color: #fafafa;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
   border: 2px solid #bfbfbf;
 }
 
-.startForm {
+.startForm, #manageTypesWrapper {
   width: 85%;
   margin: 0 auto;
   font-size: 1.2em;
@@ -116,8 +122,6 @@ nav {
 
 .showButton {
   border-radius: 0 !important;
-  background: white !important;
-  color: black !important;
   width: 15% !important;
   border: none !important;
   display: inline-block !important;
@@ -155,10 +159,8 @@ nav {
 
 .startSubmit {
   margin: 0 auto;
-  display: block;
-  margin-top: 3rem;
-  border-radius: 0;
-  width: 100%;
+  display: block !important;
+  width: 50%;
   height: 3rem;
 }
 
@@ -185,19 +187,30 @@ nav {
   padding-bottom: 1em;
   border-bottom: 1px solid #d5d5d5;
 }
-
-#colorsInfo, #layoutInfo {
-  padding-bottom: 1em;
-  border-bottom: 1px solid #d5d5d5;
+#submitWrapper {
+  margin-top: 2rem;
+  display: flex;
+  width: 100%;
+}
+.returnButton {
+  width: 50px;
+  height: 50px;
+}
+.startSubmit, .returnButton {
+  border-radius: 25px !important;
+}
+.returnButton i {
+  transform: scale(1.5);
 }
 
 .credentialTitle, .preferenceTitle {
   margin-bottom: .5em;
 }
-#usernameCredential, #layoutText, #themeText {
+#usernameCredential, #layoutText, #themeText, #sizingText {
   margin-bottom: .75em;
   font-size: 1.25em;
   font-weight: 600;
+  word-break: break-all;
 }
 
 #passwordInfo {
@@ -212,6 +225,8 @@ nav {
 
 .preferenceWrapper {
   margin-bottom: 1em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #d5d5d5;
 }
 
 .colorsContainer {
@@ -231,7 +246,6 @@ nav {
   height: 2vh;
   margin-left: auto;
   margin-right: auto;
-  border: 1px solid black;
 }
 
 #changeColorForm label {
@@ -260,7 +274,6 @@ nav {
 
   pointer-events: none;
 
-  border: 4px solid black !important;
   border-radius: .6em;
 }
 
@@ -275,6 +288,7 @@ nav {
   width: 75%;
   float: right;
   overflow: hidden;
+  margin-bottom: 1rem;
 }
 #colorPreviewPage, #layoutPreviewPage p {
   text-align: center;
@@ -282,8 +296,69 @@ nav {
   font-size: .75rem;
 }
 
-#layoutField {
+#sizingTypeField {
+  margin-bottom: 1rem;
+}
+
+#layoutField, #sizingTypeField {
   width: 20%;
+}
+#sizingValueRange {
+  display: none;
+}
+
+#manageTypesWrapper {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#addTypeInput {
+  width: 67%;
+  float: left;
+  margin-block-end: 0px;
+}
+#deleteTypeButton {
+  transform: scale(2);
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+#typesLabel {
+  margin-top: 10%;
+}
+
+#addTypeButton {
+  color: black;
+  border-color: #ced4da;
+  background-color: white;
+  border-left: none;
+}
+
+#typesListContainer ul {
+  column-count: 2;
+  width: 90%;
+  padding-left: 0px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.typeItem {
+  list-style: none;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+.typeItem span {
+  display: inline-block;
+  width: 65%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.saveDeletion {
+  color: orange;
 }
 
 /*Main page*/
@@ -345,10 +420,6 @@ nav {
 .filterSelect {
   margin: 5px;
   width: 90% !important;
-}
-
-.allFilter {
-  background-color: white;
 }
 
 #searchWrapper {
@@ -455,7 +526,7 @@ img.contentImg {
     width: 70%;
     margin-top: 3vh;
     table-layout: fixed;
-    background: white;;
+    background: white;
 }
   /*content of table*/
   .tableHeader{
@@ -514,7 +585,7 @@ tbody{
   .dataCell {
     vertical-align: middle !important;
     font-size: 1.5em;
-    word-break: break-all;
+    word-break: break-word;
 }
 #deleteAllButton {
     margin-left: 85%;
@@ -570,15 +641,9 @@ tbody{
 }
 
 .gridItemWrapper {
-    max-height: 350px;
-    max-width: 250px;
-    background-color: #ededed;
     margin-left: 50px;
     margin-right: 50px;
     margin-bottom: 50px;
-
-    width: 20%;
-    height: 40vh;
 }
 
 .gridStatus {
@@ -617,26 +682,41 @@ tbody{
   height: 100%;
 }
 
-.gridItemName {
-  margin-left: auto;
-  widows: 90%;
-  font-size: 1.75em;
-  word-break: break-all;
-}
-
 .gridItemNotes {
   width: 90%;
   margin-left: auto;
-  word-break: break-all;
+  margin-right: auto;
+  word-break: break-word;
   margin-bottom: 0px;
+
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
 }
 
 .gridItemType, .gridItemName {
   margin-left: auto;
+  margin-right: auto;
   width: 90%;
-  font-size: 1.75em;
-  word-break: break-all;
+  font-size: 1.25em;
+  word-break: break-word;
   margin-bottom: .5rem;
+
+  text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+@media screen and (max-width:1300px) {
+  #loginContent, #preferencesContent, #settingsContent {
+    margin-top: 17.5%;
+  }
+}
+
+@media screen and (max-width:768px) {
+
 }
 
   

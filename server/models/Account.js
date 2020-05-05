@@ -48,9 +48,21 @@ const AccountSchema = new mongoose.Schema({
     type: String,
     default: 'table',
   },
+  sizingType: {
+    type: String,
+    default: 'auto',
+  },
+  sizingValue: {
+    type: String,
+    default: '300px',
+  },
   theme: {
     type: String,
     default: 'light',
+  },
+  types: {
+    type: Array,
+    default: ['Film', 'TV', 'Game', 'Literature', 'Music'],
   },
 });
 
@@ -64,6 +76,9 @@ AccountSchema.statics.toAPI = doc => ({
   inProgressColor: doc.inProgressColor,
   completeColor: doc.completeColor,
   layout: doc.layout,
+  sizingType: doc.sizingType,
+  sizingValue: doc.sizingValue,
+  types: doc.types,
   theme: doc.theme,
 });
 

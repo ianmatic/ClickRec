@@ -2,6 +2,7 @@
 
 var layout = void 0;
 var theme = void 0;
+var sizing = void 0;
 
 // used in all layouts
 function setupControlListeners() {
@@ -189,7 +190,9 @@ var addMedia = function addMedia(e) {
     // don't allow adding if editing
     if (!document.querySelector("#addSubmitButton").className.includes("btn-secondary")) {
         sendAjax('POST', $("#addForm").attr("action"), $("#addForm").serialize(), function () {
-            loadContentFromServer(layout, theme);
+            document.querySelector("#addForm").reset();
+            $("#statusField").trigger('change');
+            loadContentFromServer(layout, theme, sizing);
         });
     } else {
         alert("Please save your changes before adding more media");
@@ -300,7 +303,7 @@ var saveMedia = function saveMedia(e) {
         sendAjax('PUT', '/main', data, function () {
             // only load on last one
             if (_i7 == items.length - 1) {
-                loadContentFromServer(layout, theme);
+                loadContentFromServer(layout, theme, sizing);
             }
         }); // update on server
     };
@@ -445,27 +448,27 @@ var Controls = function Controls(props) {
                             { className: "custom-select", id: "typeField", name: "type", required: "" },
                             React.createElement(
                                 "option",
-                                { value: "film" },
+                                { value: "Film" },
                                 "Film"
                             ),
                             React.createElement(
                                 "option",
-                                { value: "tv" },
+                                { value: "TV" },
                                 "TV"
                             ),
                             React.createElement(
                                 "option",
-                                { value: "game" },
+                                { value: "Game" },
                                 "Game"
                             ),
                             React.createElement(
                                 "option",
-                                { value: "literature" },
+                                { value: "Literature" },
                                 "Literature"
                             ),
                             React.createElement(
                                 "option",
-                                { value: "music" },
+                                { value: "Music" },
                                 "Music"
                             )
                         )
@@ -782,12 +785,21 @@ var setup = function setup(csrf) {
 
         layout = result.layout;
         theme = result.theme;
-        loadContentFromServer(layout, theme);
+        sizing = result.sizingValue;
+        loadContentFromServer(layout, theme, sizing);
     });
 };
 
 // lastly build table from server data
-var loadContentFromServer = function loadContentFromServer(layout, theme) {
+var loadContentFromServer = function loadContentFromServer(layout, theme, sizing) {
+    // apply dark theme if enabled
+    if (theme == "dark") {
+        $('link[title="darkTheme"]').prop('disabled', false);
+        $('link[title="lightTheme"]').prop('disabled', true);
+    } else {
+        $('link[title="darkTheme"]').prop('disabled', true);
+        $('link[title="lightTheme"]').prop('disabled', false);
+    }
     sendAjax('GET', '/getMedia', null, function (data) {
 
         // already has data, so render it
@@ -823,7 +835,7 @@ var loadContentFromServer = function loadContentFromServer(layout, theme) {
                         // send to DB
                         var _data = "name=" + row.find(".contentName").attr("data-serverdata") + ("&type=" + row.find(".contentType").attr("data-serverdata")) + ("&notes=" + row.find(".contentNotes").attr("data-serverdata")) + ("&image=" + row.find(".contentImage").attr("data-serverdata")) + ("&status=" + value) + ("&uniqueid=" + row.attr("data-id")) + ("&_csrf=" + csrfToken);
                         sendAjax('PUT', '/main', _data, function () {
-                            loadContentFromServer(layout, theme);
+                            loadContentFromServer(layout, theme, sizing);
                         }); // update on server
                     }
                 });
@@ -853,35 +865,43 @@ var loadContentFromServer = function loadContentFromServer(layout, theme) {
                         // send to DB
                         var _data2 = "name=" + gridItem.find(".gridItemname").attr("data-serverdata") + ("&type=" + gridItem.find(".gridItemType").attr("data-serverdata")) + ("&notes=" + gridItem.find(".gridItemNotes").attr("data-serverdata")) + ("&image=" + gridItem.find(".gridItemImage").attr("data-serverdata")) + ("&status=" + value) + ("&uniqueid=" + gridItem.attr("data-id")) + ("&_csrf=" + csrfToken);
                         sendAjax('PUT', '/main', _data2, function () {
-                            loadContentFromServer(layout, theme);
+                            loadContentFromServer(layout, theme, sizing);
                         }); // update on server
                     }
                 });
+
+                $(".gridItemWrapper").css("height", sizing);
+                $(".gridItemWrapper").css("width", parseInt(sizing, 10) * 0.67 + "px");
             }
         }
 
         // regardless if the content was rendered, setup controls
         setupControlListeners();
-
-        // apply dark theme if enabled
-        if (theme == "dark") {
-            $('head').append('<link rel="stylesheet" title="darkTheme" type="text/css" href="/assets/darkStyle.css">');
-        } else {
-            $('link[title="darkTheme"]').remove();
-        }
     });
 };
 "use strict";
 
 // display error message
 var handleError = function handleError(message) {
+    if (document.querySelector("#errorMessage").innerHTML !== "") {
+        $("#errorMessage").removeClass("flash");
+        $("#errorMessage")[0].offsetWidth;
+        $("#errorMessage").addClass("flash");
+    }
     $("#errorMessage").text(message);
     $("#successMessage").empty();
 };
 
 // display success message in settings
-var handleSuccess = function handleSuccess(keyword) {
-    document.querySelector("#successMessage").innerHTML = "<p id=\"successMessage\">Successfully updated your " + keyword + ". <a href=\"\" id=\"successLink\">Click here</a> to go back to preferences.</p>";
+var handleSuccess = function handleSuccess() {
+    if (document.querySelector("#successMessage").innerHTML !== "") {
+        $("#successMessage").removeClass("flash");
+        $("#successMessage")[0].offsetWidth;
+        $("#successMessage").addClass("flash");
+    }
+
+    document.querySelector("#successMessage").innerHTML = "Success!";
+
     $("#errorMessage").empty();
 };
 
