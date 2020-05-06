@@ -224,7 +224,7 @@ const deleteMedia = (item) => {
 const editMedia = (e) => {
     // update edit button
     const editButton = $("#editButton");
-    editButton.toggleClass('editing');
+    editButton[0].innerHTML = `<i class="fas fa-save"></i>`;
     editButton.off('click');
     editButton.click(saveMedia);
 
@@ -249,7 +249,7 @@ const editMedia = (e) => {
 const saveMedia = (e) => {
     // update edit button
     const editButton = $("#editButton");
-    editButton.toggleClass('editing');
+    editButton[0].innerHTML = `<i class="fas fa-edit"></i>`;
     editButton.off('click');
     editButton.click(editMedia);
 
@@ -414,7 +414,7 @@ function sortContent(column) {
 }
 
 // The form for adding new content
-const Controls = (props) => {
+const ControlsFrame = (props) => {
     return (
         <div>
             <div id="addContentContainer">
@@ -438,14 +438,7 @@ const Controls = (props) => {
                     {/*Type*/}
                     <div className="form-group row inputField">
                         <label className="col-2 col-form-label" for="type">Type*: </label>
-                        <div className="col-6">
-                            <select className="custom-select" id="typeField" name="type" required="">
-                                <option value="Film">Film</option>
-                                <option value="TV">TV</option>
-                                <option value="Game">Game</option>
-                                <option value="Literature">Literature</option>
-                                <option value="Music">Music</option>
-                            </select>
+                        <div className="col-6" id="typesTarget">
                         </div>
                     </div>
                     {/*Status*/}
@@ -483,12 +476,36 @@ const Controls = (props) => {
     );
 };
 
+const TypesOptions = function (props) {
+    const typeNodes = props.types.map(function (content, index) {
+        return (
+            <option key={index} value={`${content}`}>{`${content}`}</option>
+        )
+    });
+    if (props.filter) {
+        return (
+            <select data-toggle="dropdown" className="form-control filterSelect" id="typeFilter">
+                <option value="all">All Types</option>
+                {typeNodes}
+            </select>
+        )
+    }
+    else {
+        return (
+            <select className="custom-select" id="typeField" name="type" required="">
+                {typeNodes}
+            </select>
+        )
+    }
+
+};
+
 // build table framework
 const TableFrame = function (props) {
     return (
         <div>
             <button className="btn btn-outline-primary" id="deleteAllButton" type="button">Select All</button>
-            <table className="table table-striped" id="contentTable">
+            <table className="table table-striped" id="contentTable" cellPadding="0" cellSpacing="0">
                 {/*Set width for each column*/}
                 <colgroup>
                     <col width="5.5%" />
@@ -629,7 +646,13 @@ const setup = function (csrf) {
 
         // build controls, add and edit
         ReactDOM.render(
-            <Controls csrf={csrf} />, document.querySelector("#controls")
+            <ControlsFrame csrf={csrf} />, document.querySelector("#controls")
+        );
+        ReactDOM.render(
+            <TypesOptions types={result.types} filter={false} />, document.querySelector("#typesTarget")
+        );
+        ReactDOM.render(
+            <TypesOptions types={result.types} filter={true} />, document.querySelector("#typesFilterTarget")
         );
         $("#editButton").click(editMedia);
 
@@ -654,11 +677,11 @@ const setup = function (csrf) {
 const loadContentFromServer = (layout, theme, sizing) => {
     // apply dark theme if enabled
     if (theme == "dark") {
-        $('link[title="darkTheme"]').prop('disabled', false);
-        $('link[title="lightTheme"]').prop('disabled', true);
+        $('link[data-name="darkStyle"]').prop('disabled', false);
+        $('link[data-name="lightStyle"]').prop('disabled', true);
     } else {
-        $('link[title="darkTheme"]').prop('disabled', true);
-        $('link[title="lightTheme"]').prop('disabled', false);
+        $('link[data-name="darkStyle"]').prop('disabled', true);
+        $('link[data-name="lightStyle"]').prop('disabled', false);
     }
     sendAjax('GET', '/getMedia', null, (data) => {
 

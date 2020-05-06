@@ -350,9 +350,11 @@ var createMainWindow = function createMainWindow(csrf) {
     sendAjax('GET', '/getPreferences', null, function (result) {
         // apply dark theme if enabled
         if (result.theme == "dark") {
-            $('link[title="darkTheme"]').prop('disabled', false);
+            $('link[data-name="darkStyle"]').prop('disabled', false);
+            $('link[data-name="lightStyle"]').prop('disabled', true);
         } else {
-            $('link[title="darkTheme"]').prop('disabled', true);
+            $('link[data-name="darkStyle"]').prop('disabled', true);
+            $('link[data-name="lightStyle"]').prop('disabled', false);
         }
     });
 };

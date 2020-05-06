@@ -215,7 +215,7 @@ var deleteMedia = function deleteMedia(item) {
 var editMedia = function editMedia(e) {
     // update edit button
     var editButton = $("#editButton");
-    editButton.toggleClass('editing');
+    editButton[0].innerHTML = "<i class=\"fas fa-save\"></i>";
     editButton.off('click');
     editButton.click(saveMedia);
 
@@ -238,7 +238,7 @@ var editMedia = function editMedia(e) {
 var saveMedia = function saveMedia(e) {
     // update edit button
     var editButton = $("#editButton");
-    editButton.toggleClass('editing');
+    editButton[0].innerHTML = "<i class=\"fas fa-edit\"></i>";
     editButton.off('click');
     editButton.click(editMedia);
 
@@ -397,7 +397,7 @@ function sortContent(column) {
 }
 
 // The form for adding new content
-var Controls = function Controls(props) {
+var ControlsFrame = function ControlsFrame(props) {
     return React.createElement(
         "div",
         null,
@@ -440,39 +440,7 @@ var Controls = function Controls(props) {
                         { className: "col-2 col-form-label", "for": "type" },
                         "Type*: "
                     ),
-                    React.createElement(
-                        "div",
-                        { className: "col-6" },
-                        React.createElement(
-                            "select",
-                            { className: "custom-select", id: "typeField", name: "type", required: "" },
-                            React.createElement(
-                                "option",
-                                { value: "Film" },
-                                "Film"
-                            ),
-                            React.createElement(
-                                "option",
-                                { value: "TV" },
-                                "TV"
-                            ),
-                            React.createElement(
-                                "option",
-                                { value: "Game" },
-                                "Game"
-                            ),
-                            React.createElement(
-                                "option",
-                                { value: "Literature" },
-                                "Literature"
-                            ),
-                            React.createElement(
-                                "option",
-                                { value: "Music" },
-                                "Music"
-                            )
-                        )
-                    )
+                    React.createElement("div", { className: "col-6", id: "typesTarget" })
                 ),
                 React.createElement(
                     "div",
@@ -541,6 +509,34 @@ var Controls = function Controls(props) {
     );
 };
 
+var TypesOptions = function TypesOptions(props) {
+    var typeNodes = props.types.map(function (content, index) {
+        return React.createElement(
+            "option",
+            { key: index, value: "" + content },
+            "" + content
+        );
+    });
+    if (props.filter) {
+        return React.createElement(
+            "select",
+            { "data-toggle": "dropdown", className: "form-control filterSelect", id: "typeFilter" },
+            React.createElement(
+                "option",
+                { value: "all" },
+                "All Types"
+            ),
+            typeNodes
+        );
+    } else {
+        return React.createElement(
+            "select",
+            { className: "custom-select", id: "typeField", name: "type", required: "" },
+            typeNodes
+        );
+    }
+};
+
 // build table framework
 var TableFrame = function TableFrame(props) {
     return React.createElement(
@@ -553,7 +549,7 @@ var TableFrame = function TableFrame(props) {
         ),
         React.createElement(
             "table",
-            { className: "table table-striped", id: "contentTable" },
+            { className: "table table-striped", id: "contentTable", cellPadding: "0", cellSpacing: "0" },
             React.createElement(
                 "colgroup",
                 null,
@@ -772,7 +768,9 @@ var setup = function setup(csrf) {
         sheet.addRule('.complete', 'background-color: ' + result.completeColor + " !important;");
 
         // build controls, add and edit
-        ReactDOM.render(React.createElement(Controls, { csrf: csrf }), document.querySelector("#controls"));
+        ReactDOM.render(React.createElement(ControlsFrame, { csrf: csrf }), document.querySelector("#controls"));
+        ReactDOM.render(React.createElement(TypesOptions, { types: result.types, filter: false }), document.querySelector("#typesTarget"));
+        ReactDOM.render(React.createElement(TypesOptions, { types: result.types, filter: true }), document.querySelector("#typesFilterTarget"));
         $("#editButton").click(editMedia);
 
         // change color of selects to selected status
@@ -794,11 +792,11 @@ var setup = function setup(csrf) {
 var loadContentFromServer = function loadContentFromServer(layout, theme, sizing) {
     // apply dark theme if enabled
     if (theme == "dark") {
-        $('link[title="darkTheme"]').prop('disabled', false);
-        $('link[title="lightTheme"]').prop('disabled', true);
+        $('link[data-name="darkStyle"]').prop('disabled', false);
+        $('link[data-name="lightStyle"]').prop('disabled', true);
     } else {
-        $('link[title="darkTheme"]').prop('disabled', true);
-        $('link[title="lightTheme"]').prop('disabled', false);
+        $('link[data-name="darkStyle"]').prop('disabled', true);
+        $('link[data-name="lightStyle"]').prop('disabled', false);
     }
     sendAjax('GET', '/getMedia', null, function (data) {
 

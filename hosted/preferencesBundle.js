@@ -40,11 +40,11 @@ var handleColorChange = function handleColorChange(e) {
 
             // apply dark theme if enabled
             if (result.theme == "dark") {
-                $('link[title="darkTheme"]').prop('disabled', false);
-                $('link[title="lightTheme"]').prop('disabled', false);
+                $('link[data-name="darkStyle"]').prop('disabled', false);
+                $('link[data-name="lightStyle"]').prop('disabled', true);
             } else {
-                $('link[title="darkTheme"]').prop('disabled', false);
-                $('link[title="lightTheme"]').prop('disabled', false);
+                $('link[data-name="darkStyle"]').prop('disabled', true);
+                $('link[data-name="lightStyle"]').prop('disabled', false);
             }
         });
     });
@@ -85,7 +85,7 @@ var handleAddType = function handleAddType(e) {
     // change layout
     e.preventDefault();
     var val = document.querySelector("#addTextInput").value;
-    $("#typesList").append("<li data-serverdata=" + val + " class=\"typeItem\"><span>" + val + "</span><button class=\"btn btn-primary\">Edit</button></li>");
+    $("#typesList").append("<li data-serverdata=" + val + " class=\"typeItem\"><span>" + val + "</span><button class=\"btn btn-primary\"><i class=\"far fa-edit fa-lg\"></i></button></li>");
     $("#addTextInput").val('');
     return false;
 };
@@ -664,7 +664,7 @@ var createChangeLayoutWindow = function createChangeLayoutWindow(csrf) {
     $("#layoutField option[value=" + savedLayout).prop('selected', 'selected');
     $("#sizingTypeField option[value=" + savedSizingType + "]").prop('selected', 'selected');
     document.querySelector("#sizingValueRange").style.display = savedSizingType === "auto" && "none" || "inline-block";
-    document.querySelector("#sizingvalueRange").value = parseInt(savedSizingValue, 10);
+    document.querySelector("#sizingValueRange").value = parseInt(savedSizingValue, 10);
 
     // update preview on change
     $('#layoutField').on('change', function (e) {
@@ -673,7 +673,7 @@ var createChangeLayoutWindow = function createChangeLayoutWindow(csrf) {
     $("#sizingTypeField").on('change', function (e) {
         // toggle range
         document.querySelector("#sizingValueRange").style.display = this.value === "auto" && "none" || "inline-block";
-        document.querySelector("#sizingvalueRange").value = this.value === "auto" && "300px" || parseInt(savedSizingValue, 10);
+        document.querySelector("#sizingValueRange").value = this.value === "auto" && "300px" || parseInt(savedSizingValue, 10);
         document.querySelector('iframe').contentWindow.loadContentFromServer($('#layoutField').val(), savedTheme, $("#sizingValueRange").val());
     });
     $("#sizingValueRange").on('input', function (e) {
@@ -701,7 +701,7 @@ function SetupEditTypeButtons() {
             span[0].focus();
             span.attr('contenteditable', 'false');
             span.css('text-overflow', 'ellipsis');
-            this.innerHTML = "Edit";
+            this.className = "far fa-edit editTypeButton fa-lg";
             this.parentElement.setAttribute("data-serverdata", span.text());
         }
         // enable
@@ -709,7 +709,7 @@ function SetupEditTypeButtons() {
                 span.attr('contenteditable', 'true');
                 span[0].focus();
                 span.css('text-overflow', 'inherit');
-                this.innerHTML = "Finish";
+                this.className = "far fa-save editTypeButton fa-lg";
             }
     });
 }
@@ -727,7 +727,7 @@ var createChangeTypesWindow = function createChangeTypesWindow(csrf) {
         });
         if ($("#deleteTypeButton").hasClass("saveDeletion")) {
             $(".typeItem").each(function () {
-                $(this).find('button')[0].innerHTML = "Edit";
+                $(this).find('i')[0].className = 'far fa-edit editTypeButton fa-lg';
                 if ($(this).hasClass("marked")) {
                     $(this).remove();
                 }
@@ -737,16 +737,16 @@ var createChangeTypesWindow = function createChangeTypesWindow(csrf) {
         } else {
             $(".editTypeButton").unbind("click");
             $(".typeItem").each(function () {
-                var typeButton = $(this).find('button');
+                var typeButton = $(this).find('i');
                 var typeValue = $(this).find('span');
 
-                typeButton[0].innerHTML = "Select";
+                typeButton[0].className = "far fa-square editTypeButton fa-lg";
                 typeButton.click(function (e) {
-                    if (e.target.innerHTML === "Select") {
-                        e.target.innerHTML = "Selected";
+                    if (e.target.className === "far fa-square editTypeButton fa-lg") {
+                        e.target.className = "far fa-check-square editTypeButton fa-lg";
                         $(e.target).closest(".typeItem").addClass("marked");
                     } else {
-                        e.target.innerHTML = "Select";
+                        e.target.className = "far fa-square editTypeButton fa-lg";
                         $(e.target).closest(".typeItem").removeClass("marked");
                     }
                 });
@@ -778,11 +778,7 @@ var TypesList = function TypesList(props) {
                 null,
                 content
             ),
-            React.createElement(
-                "button",
-                { className: "btn btn-primary editTypeButton" },
-                "Edit"
-            )
+            React.createElement("i", { className: "far fa-edit editTypeButton fa-lg" })
         );
     });
 
@@ -852,11 +848,11 @@ var setup = function setup(csrf) {
 
         // apply dark theme if enabled
         if (savedTheme == "dark") {
-            $('link[title="darkTheme"]').prop('disabled', false);
-            $('link[title="lightTheme"]').prop('disabled', false);
+            $('link[data-name="darkStyle"]').prop('disabled', false);
+            $('link[data-name="lightStyle"]').prop('disabled', true);
         } else {
-            $('link[title="darkTheme"]').prop('disabled', false);
-            $('link[title="lightTheme"]').prop('disabled', false);
+            $('link[data-name="darkStyle"]').prop('disabled', true);
+            $('link[data-name="lightStyle"]').prop('disabled', false);
         }
 
         createMainWindow(csrf);
@@ -871,18 +867,6 @@ var getToken = function getToken() {
 };
 
 $(document).ready(function () {
-    // reload theme
-    sendAjax('GET', '/getPreferences', null, function (result) {
-
-        // apply dark theme if enabled
-        if (result.theme == "dark") {
-            $('link[title="darkTheme"]').prop('disabled', false);
-            $('link[title="lightTheme"]').prop('disabled', false);
-        } else {
-            $('link[title="darkTheme"]').prop('disabled', false);
-            $('link[title="lightTheme"]').prop('disabled', false);
-        }
-    });
     getToken();
 });
 "use strict";

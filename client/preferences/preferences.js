@@ -36,11 +36,11 @@ const handleColorChange = (e) => {
 
             // apply dark theme if enabled
             if (result.theme == "dark") {
-                $('link[title="darkTheme"]').prop('disabled', false);
-                $('link[title="lightTheme"]').prop('disabled', false);
+                $('link[data-name="darkStyle"]').prop('disabled', false);
+                $('link[data-name="lightStyle"]').prop('disabled', true);
             } else {
-                $('link[title="darkTheme"]').prop('disabled', false);
-                $('link[title="lightTheme"]').prop('disabled', false);
+                $('link[data-name="darkStyle"]').prop('disabled', true);
+                $('link[data-name="lightStyle"]').prop('disabled', false);
             }
         });
     });
@@ -64,7 +64,7 @@ const handleTypesChange = (e) => {
     e.preventDefault();
     let submitString = "";
     let array = [];
-    $(".typeItem").each(function() {
+    $(".typeItem").each(function () {
         array.push(this.getAttribute("data-serverdata"));
     });
     // change types
@@ -81,7 +81,7 @@ const handleAddType = (e) => {
     // change layout
     e.preventDefault();
     const val = document.querySelector("#addTextInput").value;
-    $("#typesList").append(`<li data-serverdata=${val} class="typeItem"><span>${val}</span><button class="btn btn-primary">Edit</button></li>`);
+    $("#typesList").append(`<li data-serverdata=${val} class="typeItem"><span>${val}</span><button class="btn btn-primary"><i class="far fa-edit fa-lg"></i></button></li>`);
     $("#addTextInput").val('');
     return false;
 };
@@ -427,7 +427,7 @@ const createChangeLayoutWindow = (csrf) => {
     $(`#layoutField option[value=${savedLayout}`).prop('selected', 'selected');
     $(`#sizingTypeField option[value=${savedSizingType}]`).prop('selected', 'selected');
     document.querySelector("#sizingValueRange").style.display = savedSizingType === "auto" && "none" || "inline-block";
-    document.querySelector("#sizingvalueRange").value = parseInt(savedSizingValue, 10);
+    document.querySelector("#sizingValueRange").value = parseInt(savedSizingValue, 10);
 
     // update preview on change
     $('#layoutField').on('change', function (e) {
@@ -436,7 +436,7 @@ const createChangeLayoutWindow = (csrf) => {
     $(`#sizingTypeField`).on('change', function (e) {
         // toggle range
         document.querySelector("#sizingValueRange").style.display = this.value === "auto" && "none" || "inline-block";
-        document.querySelector("#sizingvalueRange").value = this.value === "auto" && "300px" || parseInt(savedSizingValue, 10);
+        document.querySelector("#sizingValueRange").value = this.value === "auto" && "300px" || parseInt(savedSizingValue, 10);
         document.querySelector('iframe').contentWindow.loadContentFromServer($('#layoutField').val(), savedTheme, $(`#sizingValueRange`).val());
     });
     $(`#sizingValueRange`).on('input', function (e) {
@@ -464,7 +464,7 @@ function SetupEditTypeButtons() {
             span[0].focus();
             span.attr('contenteditable', 'false');
             span.css('text-overflow', 'ellipsis');
-            this.innerHTML = "Edit";
+            this.className = "far fa-edit editTypeButton fa-lg";
             this.parentElement.setAttribute("data-serverdata", span.text());
         }
         // enable
@@ -472,7 +472,7 @@ function SetupEditTypeButtons() {
             span.attr('contenteditable', 'true');
             span[0].focus();
             span.css('text-overflow', 'inherit');
-            this.innerHTML = "Finish";
+            this.className = "far fa-save editTypeButton fa-lg";
         }
     });
 }
@@ -494,7 +494,7 @@ const createChangeTypesWindow = (csrf) => {
         });
         if ($("#deleteTypeButton").hasClass("saveDeletion")) {
             $(".typeItem").each(function () {
-                $(this).find('button')[0].innerHTML = "Edit";
+                $(this).find('i')[0].className = 'far fa-edit editTypeButton fa-lg';
                 if ($(this).hasClass("marked")) {
                     $(this).remove();
                 }
@@ -505,17 +505,17 @@ const createChangeTypesWindow = (csrf) => {
         else {
             $(".editTypeButton").unbind("click");
             $(".typeItem").each(function () {
-                const typeButton = $(this).find('button');
+                const typeButton = $(this).find('i');
                 const typeValue = $(this).find('span');
 
-                typeButton[0].innerHTML = "Select";
+                typeButton[0].className = "far fa-square editTypeButton fa-lg";
                 typeButton.click((e) => {
-                    if (e.target.innerHTML === "Select") {
-                        e.target.innerHTML = "Selected";
+                    if (e.target.className === "far fa-square editTypeButton fa-lg") {
+                        e.target.className = "far fa-check-square editTypeButton fa-lg";
                         $(e.target).closest(".typeItem").addClass("marked");
                     }
                     else {
-                        e.target.innerHTML = "Select";
+                        e.target.className = "far fa-square editTypeButton fa-lg";
                         $(e.target).closest(".typeItem").removeClass("marked");
                     }
                 });
@@ -540,7 +540,7 @@ const TypesList = function (props) {
 
     // build li's with attached buttons
     const contentNodes = props.types.map(function (content) {
-        return <li data-serverdata={content} className="typeItem"><span>{content}</span><button className="btn btn-primary editTypeButton">Edit</button></li>
+        return <li data-serverdata={content} className="typeItem"><span>{content}</span><i className="far fa-edit editTypeButton fa-lg"></i></li>
     });
 
     return (
@@ -610,11 +610,11 @@ const setup = (csrf) => {
 
         // apply dark theme if enabled
         if (savedTheme == "dark") {
-            $('link[title="darkTheme"]').prop('disabled', false);
-            $('link[title="lightTheme"]').prop('disabled', false);
+            $('link[data-name="darkStyle"]').prop('disabled', false);
+            $('link[data-name="lightStyle"]').prop('disabled', true);
         } else {
-            $('link[title="darkTheme"]').prop('disabled', false);
-            $('link[title="lightTheme"]').prop('disabled', false);
+            $('link[data-name="darkStyle"]').prop('disabled', true);
+            $('link[data-name="lightStyle"]').prop('disabled', false);
         }
 
         createMainWindow(csrf);
@@ -629,17 +629,5 @@ const getToken = () => {
 };
 
 $(document).ready(function () {
-            // reload theme
-            sendAjax('GET', '/getPreferences', null, (result) => {
-
-                // apply dark theme if enabled
-                if (result.theme == "dark") {
-                    $('link[title="darkTheme"]').prop('disabled', false);
-                    $('link[title="lightTheme"]').prop('disabled', false);
-                } else {
-                    $('link[title="darkTheme"]').prop('disabled', false);
-                    $('link[title="lightTheme"]').prop('disabled', false);
-                }
-            });
     getToken();
 });

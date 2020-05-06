@@ -48,14 +48,7 @@
             <option class="inProgress" value="inProgress">In Progress</option>
             <option class="complete" value="complete">Complete</option>
           </select>
-          <select data-toggle="dropdown" class="form-control filterSelect" id="typeFilter">
-            <option value="all">All Types</option>
-            <option value="film">Film</option>
-            <option value="tv">TV</option>
-            <option value="game">Game</option>
-            <option value="literature">Literature</option>
-            <option value="music">Music</option>
-          </select>
+          <div id="typesFilterTarget"></div>
         </div>
       </div>
       <!--Edit-->
@@ -79,34 +72,6 @@
   <div id="contentContainer">
     <h1 class="emptyContent">No Media Found</h1>
   </div>
-  <!--Table-->
-  {{!-- <div id="tableContainer">
-    <button class="btn btn-outline-primary" id="deleteAllButton" type="button">Select All</button>
-    <table class="table table-striped" id="contentTable">
-      <!--Set width for each column-->
-      <colgroup>
-        <col width="5.5%">
-        <col width="23.75%">
-        <col width="23.75%">
-        <col width="23.75%">
-        <col width="23.75%">
-      </colgroup>
-      <thead>
-
-        <tr>
-          <th class="tableHeader" id="statusHeader"></th>
-          <th class="tableHeader" id="nameHeader">Name</th>
-          <th class="tableHeader" id="typeHeader">Type</th>
-          <th class="tableHeader" id="notesHeader">Notes</th>
-          <th class="tableHeader" id="imageHeader">Image</th>
-        </tr>
-      </thead>
-      <tbody id="target">
-        <!--Filled by React and node-->
-      </tbody>
-    </table>
-    <h1 class="emptyContent">No Media Found</h1>
-  </div> --}}
   <script src="/assets/bundle.js"></script>
 </body>
 

@@ -357,6 +357,9 @@ nav {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.typeItem i {
+  cursor: pointer;
+}
 .saveDeletion {
   color: orange;
 }
@@ -434,7 +437,9 @@ nav {
   transform: scale(1.75);
 }
 
-
+.contentImage {
+  padding: 0px !important;
+}
 img.contentImg {
   max-width: 100%;
   max-height: 100%;
@@ -502,6 +507,7 @@ img.contentImg {
   #editButton {
     margin-right: 6%;
     color: darkgray;
+    width: 60px;
 }
 
   #editButton i {
@@ -549,17 +555,18 @@ tbody{
 }
   .dropdown-toggle:empty::after {
     margin-left: 0;
-    border-top: .6em solid;
-    border-left: .4em solid transparent;
-    border-right: .4em solid transparent;
+    border-top: .6vw solid;
+    border-left: .4vw solid transparent;
+    border-right: .4vw solid transparent;
+    margin-top: .5vh;
 }
   .dropdown-menu {
     min-width: 10px;
     width: 120px;
 }
   .rowDropDownWrapper {
-    width: 25px;
-    height: 25px;
+    width: 1.25vw;
+    height: 1.25vw;
     margin-left: auto;
     margin-right: auto;
 }
@@ -574,7 +581,6 @@ tbody{
     color: black;
 }
   
-  
   /*cells*/
   td {
     position: relative;
@@ -584,7 +590,7 @@ tbody{
 }
   .dataCell {
     vertical-align: middle !important;
-    font-size: 1.5em;
+    font-size: 1vw;
     word-break: break-word;
 }
 #deleteAllButton {
@@ -593,7 +599,6 @@ tbody{
     visibility: hidden;
     opacity: 0;
 }
-  
   /*delete button that appears when editing table*/
   .deleteButtonContainer {
     visibility: hidden;

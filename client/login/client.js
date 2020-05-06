@@ -200,6 +200,6 @@ const getToken = () => {
 };
 
 $(document).ready(function () {
-    $('link[title="darkTheme"]').prop('disabled', true);
+    $('link[data-name="darkStyle"]').prop('disabled', true);
     getToken();
 });
