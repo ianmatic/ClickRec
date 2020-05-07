@@ -436,13 +436,14 @@ nav {
   color: white;
   transform: scale(1.75);
 }
-
-.contentImage {
-  padding: 0px !important;
-}
 img.contentImg {
   max-width: 100%;
   max-height: 100%;
+  object-fit: cover;
+  height: 100%;
+  margin-left: auto;
+    margin-right: auto;
+    display: block;
 }
 
 #userWrapper {
@@ -533,6 +534,7 @@ img.contentImg {
     margin-top: 3vh;
     table-layout: fixed;
     background: white;
+    border-collapse: collapse;
 }
   /*content of table*/
   .tableHeader{
@@ -559,6 +561,7 @@ tbody{
     border-left: .4vw solid transparent;
     border-right: .4vw solid transparent;
     margin-top: .5vh;
+    vertical-align: top;
 }
   .dropdown-menu {
     min-width: 10px;
@@ -592,6 +595,10 @@ tbody{
     vertical-align: middle !important;
     font-size: 1vw;
     word-break: break-word;
+}
+.contentImage {
+  padding: 0px !important;
+  vertical-align: top !important;
 }
 #deleteAllButton {
     margin-left: 85%;
