@@ -208,6 +208,8 @@ var SignupWindow = function SignupWindow(props) {
                     " ",
                     React.createElement("br", null),
                     React.createElement("div", { id: "recaptcha", "data-sitekey": "6Lc1lsIUAAAAAFTfmkhNent8xUg2NZzgP-ahr9Ws" }),
+                    " ",
+                    React.createElement("br", null),
                     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
                     React.createElement("input", { className: "startSubmit btn btn-outline-primary", type: "submit", value: "Sign Up" })
                 )
@@ -243,6 +245,7 @@ var createLoginWindow = function createLoginWindow(csrf) {
                 $(btn).siblings().attr("type", "password");
             }
     });
+    revealContent();
 };
 
 // render a new signup window
@@ -338,4 +341,19 @@ var sendAjax = function sendAjax(type, action, data, success) {
             handleError(messageObj.error);
         }
     });
+};
+
+// reveal content when page is done loading
+var revealContent = function revealContent() {
+    // only reveal once per page load
+    if (!$('.fadeOutWrapper').hasClass('invisible')) {
+        // Fade in/out
+        $(".invisible").removeClass('invisible'); // reveal the content
+
+        $('.fadeOutWrapper').addClass('fadeOut');
+        $('.fadeOutWrapper').one("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", function () {
+            // when the animation finishes
+            $(this).addClass('invisible'); // make the logo invisible
+        });
+    }
 };

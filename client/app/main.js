@@ -29,6 +29,33 @@ function setupControlListeners() {
         }
     });
 
+    // delete all button
+    $("#deleteAllButton, #gridDeleteAllButton").click(() => {
+        // select all
+        let buttons = document.querySelectorAll(".deleteButton");
+
+        // hasn't changed any icons yet
+        let madeSelection = false;
+        for (let i = 0; i < buttons.length; i++) {
+            // mark all as selected
+            if (!buttons[i].className.includes("marked")) {
+                buttons[i].className += " marked";
+
+                // made a selection
+                madeSelection = true;
+            }
+        }
+
+        // didn't change any icons, so deselect all
+        if (!madeSelection) {
+            for (let i = 0; i < buttons.length; i++) {
+                if (buttons[i].className.includes("marked")) {
+                    buttons[i].classList.remove("marked");
+                }
+            }
+        }
+    });
+
     // search whenever values change
     $("#searchInput").on('input change keyup paste', () => {
 
@@ -91,6 +118,7 @@ function setupControlListeners() {
             }
         }
     });
+    revealContent();
 }
 
 // only call when using table
@@ -110,34 +138,6 @@ function setupTableListeners() {
     });
     $("#imageHeader").click(() => {
         sortContent(4);
-    });
-
-
-    // delete all button
-    $("#deleteAllButton").click(() => {
-        // select all
-        let buttons = document.querySelectorAll(".deleteButton");
-
-        // hasn't changed any icons yet
-        let madeSelection = false;
-        for (let i = 0; i < buttons.length; i++) {
-            // mark all as selected
-            if (!buttons[i].className.includes("marked")) {
-                buttons[i].className += " marked";
-
-                // made a selection
-                madeSelection = true;
-            }
-        }
-
-        // didn't change any icons, so deselect all
-        if (!madeSelection) {
-            for (let i = 0; i < buttons.length; i++) {
-                if (buttons[i].className.includes("marked")) {
-                    buttons[i].classList.remove("marked");
-                }
-            }
-        }
     });
 }
 
@@ -232,15 +232,19 @@ const editMedia = (e) => {
     $("#addSubmitButton").toggleClass("btn-secondary");
     $("#addSubmitButton").toggleClass("btn-outline-primary");
 
-    // show delete button
-    $(".deleteButtonContainer, #deleteAllButton").css("visibility", "visible");
-    $(".deleteButtonContainer, #deleteAllButton").css("opacity", "1");
 
+
+
+    // show delete button
     // enable editing
     if (layout == "table") {
         $(".mediaRow").attr("contenteditable", true);
+        $(".deleteButtonContainer, #deleteAllButton").css("visibility", "visible");
+        $(".deleteButtonContainer, #deleteAllButton").css("opacity", "1");
     }
     else if (layout == "grid") {
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("visibility", "visible");
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("opacity", "1");
         $(".gridItemWrapper").attr("contenteditable", true);
     }
 
@@ -327,8 +331,15 @@ const saveMedia = (e) => {
     }
 
     // hide delete buttons
-    $(".deleteButtonContainer, #deleteAllButton").css("visibility", "hidden");
-    $(".deleteButtonContainer, #deleteAllButton").css("opacity", "0");
+    if (layout === "table") {
+        $(".deleteButtonContainer, #deleteAllButton").css("visibility", "hidden");
+        $(".deleteButtonContainer, #deleteAllButton").css("opacity", "0");
+    }
+    else {
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("visibility", "hidden");
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("opacity", "0");
+    }
+
 
 };
 
@@ -771,8 +782,12 @@ const loadContentFromServer = (layout, theme, sizing) => {
                     }
                 });
 
+                const value = parseInt(sizing, 10);
                 $(".gridItemWrapper").css("height", sizing);
-                $(".gridItemWrapper").css("width", (parseInt(sizing, 10) * 0.67) + "px");
+                $(".gridItemWrapper").css("width", (value * 0.67) + "px");
+                $(".gridItemType, .gridItemName").css('font-size', (value / 16.67) + "px");
+                $(".gridItemNotes").css('font-size', (value / 20) + "px");
+                $(".gridDropDownWrapper, .gridItemDeleteButton i").css('transform', `scale(${value / 400}`);
             }
         }
 

@@ -222,7 +222,7 @@ var MainWindow = function MainWindow(props) {
                     ),
                     React.createElement(
                         "p",
-                        { id: "layoutText" },
+                        { id: "typeText" },
                         "" + savedTypes
                     ),
                     React.createElement(
@@ -678,8 +678,12 @@ var createChangeLayoutWindow = function createChangeLayoutWindow(csrf) {
     });
     $("#sizingValueRange").on('input', function (e) {
         if (savedLayout === "grid") {
+            var value = parseInt(this.value, 10);
             $("iframe").contents().find(".gridItemWrapper").css("height", this.value);
-            $("iframe").contents().find(".gridItemWrapper").css("width", parseInt(this.value, 10) * 0.67 + "px");
+            $("iframe").contents().find(".gridItemWrapper").css("width", value * 0.67 + "px");
+            $("iframe").contents().find(".gridItemType, .gridItemName").css('font-size', value / 16.67 + "px");
+            $("iframe").contents().find(".gridItemNotes").css('font-size', value / 20 + "px");
+            $("iframe").contents().find(".gridDropDownWrapper, .gridItemDeleteButton i").css('transform', "scale(" + value / 400);
         }
     });
 
@@ -795,6 +799,7 @@ var TypesList = function TypesList(props) {
 // render a new main window
 var createMainWindow = function createMainWindow(csrf) {
     ReactDOM.render(React.createElement(MainWindow, null), document.querySelector("#preferencesContent"));
+    document.querySelector("#typeText").innerHTML = document.querySelector("#typeText").innerHTML.replace(/,/g, ', ');
 
     // setup changeColors link
     var changeColorsLink = document.querySelector("#changeColorsLink");
@@ -822,11 +827,11 @@ var createMainWindow = function createMainWindow(csrf) {
         createChangeTypesWindow(csrf);
         return false;
     };
+    revealContent();
 };
 
 // default to start window
 var setup = function setup(csrf) {
-    createMainWindow(csrf);
     sendAjax('GET', '/getPreferences', null, function (result) {
 
         // get the saved colors
@@ -914,4 +919,19 @@ var sendAjax = function sendAjax(type, action, data, success) {
             handleError(messageObj.error);
         }
     });
+};
+
+// reveal content when page is done loading
+var revealContent = function revealContent() {
+    // only reveal once per page load
+    if (!$('.fadeOutWrapper').hasClass('invisible')) {
+        // Fade in/out
+        $(".invisible").removeClass('invisible'); // reveal the content
+
+        $('.fadeOutWrapper').addClass('fadeOut');
+        $('.fadeOutWrapper').one("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", function () {
+            // when the animation finishes
+            $(this).addClass('invisible'); // make the logo invisible
+        });
+    }
 };

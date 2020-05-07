@@ -30,6 +30,33 @@ function setupControlListeners() {
             }
     });
 
+    // delete all button
+    $("#deleteAllButton, #gridDeleteAllButton").click(function () {
+        // select all
+        var buttons = document.querySelectorAll(".deleteButton");
+
+        // hasn't changed any icons yet
+        var madeSelection = false;
+        for (var i = 0; i < buttons.length; i++) {
+            // mark all as selected
+            if (!buttons[i].className.includes("marked")) {
+                buttons[i].className += " marked";
+
+                // made a selection
+                madeSelection = true;
+            }
+        }
+
+        // didn't change any icons, so deselect all
+        if (!madeSelection) {
+            for (var _i = 0; _i < buttons.length; _i++) {
+                if (buttons[_i].className.includes("marked")) {
+                    buttons[_i].classList.remove("marked");
+                }
+            }
+        }
+    });
+
     // search whenever values change
     $("#searchInput").on('input change keyup paste', function () {
 
@@ -70,24 +97,25 @@ function setupControlListeners() {
                 // otherwise filter
 
                 // check all items
-                for (var _i = 0; _i < gridItems.length; _i++) {
+                for (var _i2 = 0; _i2 < gridItems.length; _i2++) {
 
                     // get name type and notes
-                    var _textContent = gridItems[_i].querySelector(".gridItemName").innerText + gridItems[_i].querySelector(".gridItemType").innerText + gridItems[_i].querySelector(".gridItemNotes").innerText;
+                    var _textContent = gridItems[_i2].querySelector(".gridItemName").innerText + gridItems[_i2].querySelector(".gridItemType").innerText + gridItems[_i2].querySelector(".gridItemNotes").innerText;
                     _textContent = _textContent.replace(/ +/g, "");
                     _textContent = _textContent.toLowerCase();
 
                     // match, so display it
                     if (_textContent.includes(inputValue)) {
-                        gridItems[_i].style.display = "block";
+                        gridItems[_i2].style.display = "block";
                     } else {
                         // no match, so hide
-                        gridItems[_i].style.display = "none";
+                        gridItems[_i2].style.display = "none";
                     }
                 }
             }
         }
     });
+    revealContent();
 }
 
 // only call when using table
@@ -107,33 +135,6 @@ function setupTableListeners() {
     });
     $("#imageHeader").click(function () {
         sortContent(4);
-    });
-
-    // delete all button
-    $("#deleteAllButton").click(function () {
-        // select all
-        var buttons = document.querySelectorAll(".deleteButton");
-
-        // hasn't changed any icons yet
-        var madeSelection = false;
-        for (var i = 0; i < buttons.length; i++) {
-            // mark all as selected
-            if (!buttons[i].className.includes("marked")) {
-                buttons[i].className += " marked";
-
-                // made a selection
-                madeSelection = true;
-            }
-        }
-
-        // didn't change any icons, so deselect all
-        if (!madeSelection) {
-            for (var _i2 = 0; _i2 < buttons.length; _i2++) {
-                if (buttons[_i2].className.includes("marked")) {
-                    buttons[_i2].classList.remove("marked");
-                }
-            }
-        }
     });
 }
 
@@ -224,13 +225,14 @@ var editMedia = function editMedia(e) {
     $("#addSubmitButton").toggleClass("btn-outline-primary");
 
     // show delete button
-    $(".deleteButtonContainer, #deleteAllButton").css("visibility", "visible");
-    $(".deleteButtonContainer, #deleteAllButton").css("opacity", "1");
-
     // enable editing
     if (layout == "table") {
         $(".mediaRow").attr("contenteditable", true);
+        $(".deleteButtonContainer, #deleteAllButton").css("visibility", "visible");
+        $(".deleteButtonContainer, #deleteAllButton").css("opacity", "1");
     } else if (layout == "grid") {
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("visibility", "visible");
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("opacity", "1");
         $(".gridItemWrapper").attr("contenteditable", true);
     }
 };
@@ -313,8 +315,13 @@ var saveMedia = function saveMedia(e) {
     }
 
     // hide delete buttons
-    $(".deleteButtonContainer, #deleteAllButton").css("visibility", "hidden");
-    $(".deleteButtonContainer, #deleteAllButton").css("opacity", "0");
+    if (layout === "table") {
+        $(".deleteButtonContainer, #deleteAllButton").css("visibility", "hidden");
+        $(".deleteButtonContainer, #deleteAllButton").css("opacity", "0");
+    } else {
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("visibility", "hidden");
+        $(".deleteButtonContainer, #gridDeleteAllButton").css("opacity", "0");
+    }
 };
 
 // used W3 for reference algo https://www.w3schools.com/howto/howto_js_sort_table.asp
@@ -868,8 +875,12 @@ var loadContentFromServer = function loadContentFromServer(layout, theme, sizing
                     }
                 });
 
+                var value = parseInt(sizing, 10);
                 $(".gridItemWrapper").css("height", sizing);
-                $(".gridItemWrapper").css("width", parseInt(sizing, 10) * 0.67 + "px");
+                $(".gridItemWrapper").css("width", value * 0.67 + "px");
+                $(".gridItemType, .gridItemName").css('font-size', value / 16.67 + "px");
+                $(".gridItemNotes").css('font-size', value / 20 + "px");
+                $(".gridDropDownWrapper, .gridItemDeleteButton i").css('transform', "scale(" + value / 400);
             }
         }
 
@@ -922,4 +933,19 @@ var sendAjax = function sendAjax(type, action, data, success) {
             handleError(messageObj.error);
         }
     });
+};
+
+// reveal content when page is done loading
+var revealContent = function revealContent() {
+    // only reveal once per page load
+    if (!$('.fadeOutWrapper').hasClass('invisible')) {
+        // Fade in/out
+        $(".invisible").removeClass('invisible'); // reveal the content
+
+        $('.fadeOutWrapper').addClass('fadeOut');
+        $('.fadeOutWrapper').one("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", function () {
+            // when the animation finishes
+            $(this).addClass('invisible'); // make the logo invisible
+        });
+    }
 };

@@ -110,7 +110,7 @@ const SignupWindow = (props) => {
                         </div>
                     </div> <br />
                     {/*Captcha*/}
-                    <div id="recaptcha" data-sitekey="6Lc1lsIUAAAAAFTfmkhNent8xUg2NZzgP-ahr9Ws"></div>
+                    <div id="recaptcha" data-sitekey="6Lc1lsIUAAAAAFTfmkhNent8xUg2NZzgP-ahr9Ws"></div> <br />
                     {/*CSRF is invisible*/}
                     <input type="hidden" name="_csrf" value={props.csrf} />
                     <input className="startSubmit btn btn-outline-primary" type="submit" value="Sign Up" />
@@ -150,6 +150,7 @@ const createLoginWindow = (csrf) => {
             $(btn).siblings().attr("type", "password");
         }
     });
+    revealContent();
 };
 
 // render a new signup window

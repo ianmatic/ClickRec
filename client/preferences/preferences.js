@@ -128,7 +128,7 @@ const MainWindow = (props) => {
                 </div>
                 <div className="preferenceWrapper" id="typesInfo">
                     <p className="preferenceTitle">Types:</p>
-                    <p id="layoutText">{`${savedTypes}`}</p>
+                    <p id="typeText">{`${savedTypes}`}</p>
                     <a href="" id="changeTypesLink">Change Types</a>
                 </div>
                 <div id="mainPreviewPage">
@@ -441,8 +441,12 @@ const createChangeLayoutWindow = (csrf) => {
     });
     $(`#sizingValueRange`).on('input', function (e) {
         if (savedLayout === "grid") {
+            let value = parseInt(this.value, 10);
             $("iframe").contents().find(".gridItemWrapper").css("height", this.value);
-            $("iframe").contents().find(".gridItemWrapper").css("width", (parseInt(this.value, 10) * 0.67) + "px");
+            $("iframe").contents().find(".gridItemWrapper").css("width", (value * 0.67) + "px");
+            $("iframe").contents().find(".gridItemType, .gridItemName").css('font-size', (value / 16.67) + "px");
+            $("iframe").contents().find(".gridItemNotes").css('font-size', (value / 20) + "px");
+            $("iframe").contents().find(".gridDropDownWrapper, .gridItemDeleteButton i").css('transform', `scale(${value / 400}`);
         }
     });
 
@@ -557,6 +561,7 @@ const createMainWindow = (csrf) => {
         <MainWindow />,
         document.querySelector("#preferencesContent")
     );
+    document.querySelector("#typeText").innerHTML = document.querySelector("#typeText").innerHTML.replace(/,/g, ', ');
 
     // setup changeColors link
     const changeColorsLink = document.querySelector("#changeColorsLink");
@@ -584,11 +589,11 @@ const createMainWindow = (csrf) => {
         createChangeTypesWindow(csrf);
         return false;
     };
+    revealContent();
 };
 
 // default to start window
 const setup = (csrf) => {
-    createMainWindow(csrf);
     sendAjax('GET', '/getPreferences', null, (result) => {
 
         // get the saved colors

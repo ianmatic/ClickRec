@@ -28,25 +28,27 @@
 </head>
 
 <body>
-    <nav>
-        <a href="/main" id="logoWrapper">
-            <img id="logo" src="/assets/img/logo.png" alt="ClickREC Logo" />
-            <h1 id="title">ClickREC</h1>
-        </a>
-        <!--User Icon-->
-        <div id="settingsIconWrapper">
-            <div class="btn-group" id="userWrapper">
-                <i data-toggle="dropdown" id="userIcon" class="fas fa-user"></i>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" href="/main">Home</a>
-                    <a class="dropdown-item" href="/preferences">Preferences</a>
-                    <a class="dropdown-item" href="/logout">Sign Out</a>
+    <div class="invisible">
+        <nav>
+            <a href="/main" id="logoWrapper">
+                <img id="logo" src="/assets/img/logo.png" alt="ClickREC Logo" />
+                <h1 id="title">ClickREC</h1>
+            </a>
+            <!--User Icon-->
+            <div id="settingsIconWrapper">
+                <div class="btn-group" id="userWrapper">
+                    <i data-toggle="dropdown" id="userIcon" class="fas fa-user"></i>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="/main">Home</a>
+                        <a class="dropdown-item" href="/preferences">Preferences</a>
+                        <a class="dropdown-item" href="/logout">Sign Out</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
-    <section id="settingsContent">
-    </section>
+        </nav>
+        <section id="settingsContent">
+        </section>
+    </div>
     <script src="/assets/settingsBundle.js"></script>
 </body>
 

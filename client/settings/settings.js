@@ -251,6 +251,7 @@ const createMainWindow = (csrf) => {
             $('link[data-name="darkStyle"]').prop('disabled', true);
             $('link[data-name="lightStyle"]').prop('disabled', false);
         }
+        revealContent();
     });
 };
 

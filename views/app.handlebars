@@ -26,51 +26,54 @@
 </head>
 
 <body>
-  <nav>
-    <a href="/main" id="logoWrapper" class="logoWrapperApp">
-      <img id="logo" src="/assets/img/logo.png" alt="ClickREC Logo" />
-      <h1 id="title">ClickREC</h1>
-    </a>
-    <div id="navControls">
-      <!--Search field-->
-      <div class="input-group" id="searchWrapper">
-        <input id="searchInput" class="form-control" placeholder="Search for keyword" type="text">
-      </div>
-      <!--Filter-->
-      <div class="btn-group" id="filterDropdown">
-        <button class="btn" type="button" id="filterDropDown" data-toggle="dropdown">
-          <i id="filterIcon" class="fas fa-filter"></i>
-        </button>
-        <div class="dropdown-menu" role="menu" id="filterDropdownMenu">
-          <select data-toggle="dropdown" class="form-control filterSelect" id="statusFilter">
-            <option class="allFilter" value="all">All Statuses</option>
-            <option class="wishList" value="wishList">Wishlist</option>
-            <option class="inProgress" value="inProgress">In Progress</option>
-            <option class="complete" value="complete">Complete</option>
-          </select>
-          <div id="typesFilterTarget"></div>
+  <div class="invisible">
+    <nav>
+      <a href="/main" id="logoWrapper" class="logoWrapperApp">
+        <img id="logo" src="/assets/img/logo.png" alt="ClickREC Logo" />
+        <h1 id="title">ClickREC</h1>
+      </a>
+      <div id="navControls">
+        <!--Search field-->
+        <div class="input-group" id="searchWrapper">
+          <input id="searchInput" class="form-control" placeholder="Search for keyword" type="text">
+        </div>
+        <!--Filter-->
+        <div class="btn-group" id="filterDropdown">
+          <button class="btn" type="button" id="filterDropDown" data-toggle="dropdown">
+            <i id="filterIcon" class="fas fa-filter"></i>
+          </button>
+          <div class="dropdown-menu" role="menu" id="filterDropdownMenu">
+            <select data-toggle="dropdown" class="form-control filterSelect" id="statusFilter">
+              <option class="allFilter" value="all">All Statuses</option>
+              <option class="wishList" value="wishList">Wishlist</option>
+              <option class="inProgress" value="inProgress">In Progress</option>
+              <option class="complete" value="complete">Complete</option>
+            </select>
+            <div id="typesFilterTarget"></div>
+          </div>
+        </div>
+        <!--Edit-->
+        <button class="btn" id="editButton" type="button"><i class="fas fa-edit"></i></button>
+        <!--User Icon-->
+        <div class="btn-group" id="userWrapper">
+          <i data-toggle="dropdown" id="userIcon" class="fas fa-user"></i>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="/settings">Account</a>
+            <a class="dropdown-item" href="/preferences">Preferences</a>
+            <a class="dropdown-item" href="/logout">Sign Out</a>
+          </div>
         </div>
       </div>
-      <!--Edit-->
-      <button class="btn" id="editButton" type="button"><i class="fas fa-edit"></i></button>
-      <!--User Icon-->
-      <div class="btn-group" id="userWrapper">
-        <i data-toggle="dropdown" id="userIcon" class="fas fa-user"></i>
-        <div class="dropdown-menu dropdown-menu-right">
-          <a class="dropdown-item" href="/settings">Account</a>
-          <a class="dropdown-item" href="/preferences">Preferences</a>
-          <a class="dropdown-item" href="/logout">Sign Out</a>
-        </div>
-      </div>
-    </div>
 
-  </nav>
-  <!--Add and edit-->
-  <section id="controls">
-    <!--Filled by React-->
-  </section>
-  <div id="contentContainer">
-    <h1 class="emptyContent">No Media Found</h1>
+    </nav>
+    <!--Add and edit-->
+    <section id="controls">
+      <!--Filled by React-->
+    </section>
+    <div id="contentContainer">
+      <h1 class="emptyContent">No Media Found</h1>
+    </div>
+    <button class="btn btn-outline-primary" id="gridDeleteAllButton" type="button">Select All</button>
   </div>
   <script src="/assets/bundle.js"></script>
 </body>

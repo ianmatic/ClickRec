@@ -356,6 +356,7 @@ var createMainWindow = function createMainWindow(csrf) {
             $('link[data-name="darkStyle"]').prop('disabled', true);
             $('link[data-name="lightStyle"]').prop('disabled', false);
         }
+        revealContent();
     });
 };
 
@@ -422,4 +423,19 @@ var sendAjax = function sendAjax(type, action, data, success) {
             handleError(messageObj.error);
         }
     });
+};
+
+// reveal content when page is done loading
+var revealContent = function revealContent() {
+    // only reveal once per page load
+    if (!$('.fadeOutWrapper').hasClass('invisible')) {
+        // Fade in/out
+        $(".invisible").removeClass('invisible'); // reveal the content
+
+        $('.fadeOutWrapper').addClass('fadeOut');
+        $('.fadeOutWrapper').one("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", function () {
+            // when the animation finishes
+            $(this).addClass('invisible'); // make the logo invisible
+        });
+    }
 };

@@ -25,8 +25,11 @@ nav {
     border: 1px solid white !important;
 }
 .dropdown-item {
-    background-color: black !important;
+    background-color: black;
     color: white !important;
+}
+.dropdown-item:hover {
+    color: black !important;
 }
 .form-control {
     background-color: black !important;

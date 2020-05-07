@@ -36,9 +36,23 @@ const sendAjax = (type, action, data, success) => {
         data: data,
         dataType: "json",
         success: success,
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             var messageObj = JSON.parse(xhr.responseText);
             handleError(messageObj.error);
         }
     });
+};
+
+// reveal content when page is done loading
+const revealContent = () => {
+    // only reveal once per page load
+    if(!$('.fadeOutWrapper').hasClass('invisible')) {
+    // Fade in/out
+    $(".invisible").removeClass('invisible'); // reveal the content
+    
+    $('.fadeOutWrapper').addClass('fadeOut');
+    $('.fadeOutWrapper').one("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", function () { // when the animation finishes
+        $(this).addClass('invisible'); // make the logo invisible
+    });
+    }
 };
