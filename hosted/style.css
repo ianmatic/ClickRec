@@ -10,6 +10,8 @@ html, body {
 }
 body {
   background-size: cover !important;
+  overflow-x: unset;
+  position: absolute;
 }
 a {
     text-decoration: underline;
