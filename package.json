@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "engines": {
     "node": "20.9.0",
-    "npm": "10.1.0"
+    "npm": "10.2.1"
   },
   "description": "A Rich Web App for tracking your favorite media",
   "main": "./server/app.js",
