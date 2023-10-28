@@ -5,7 +5,7 @@
     "node": "10.16.0",
     "npm": "6.9.0"
   },
-  "description": "A Simple Login Example using Node.js, Mongo and Redis",
+  "description": "A Rich Web App for tracking your favorite media",
   "main": "./server/app.js",
   "scripts": {
     "buildLoginBundle": "babel ./client/login ./client/helper --presets react --out-file ./hosted/loginBundle.js",
@@ -28,10 +28,9 @@
     "Redis",
     "Login"
   ],
-  "author": "Cody Van De Mark",
+  "author": "Ian Matic",
   "license": "Apache 2.0",
   "dependencies": {
-    "body-parser": "^1.15.0",
     "bootstrap": "^4.3.1",
     "compression": "^1.6.1",
     "connect-redis": "^3.0.2",
